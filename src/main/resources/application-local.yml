@@ -13,10 +13,11 @@ spring:
     prefix: classpath:/templates/
     encoding: UTF-8
     suffix: .html
-    mode: HTML
+    mode: HTML5
   resources:
     static-locations:
-      - classpath:templates/
+      - classpath:/templates/
+      - classpath:/static/
   h2:
     console:
       enabled: true
@@ -24,3 +25,8 @@ spring:
 
 server:
   port: 9000
+
+logging:
+  level:
+    root: info
+    org.springframework.web: trace
