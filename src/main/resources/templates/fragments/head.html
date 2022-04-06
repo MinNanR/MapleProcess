@@ -9,17 +9,17 @@
             <li class="layui-nav-item layui-hide layui-show-md-inline-block">
                 <a href="javascript:;">
                     <img src="//tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg" class="layui-nav-img">
-                    tester
+                    <span th:text="${@characterService.getCurrentCharacter().characterName}"></span>
                 </a>
                 <dl class="layui-nav-child">
-                    <dd><a href="">Your Profile</a></dd>
-                    <dd><a href="">Settings</a></dd>
-                    <dd><a href="">Sign out</a></dd>
+                    <dd th:each="character : ${@characterService.getCharacterList()}">
+                        <a th:text="${character.characterName}"></a>
+                    </dd>
                 </dl>
             </li>
-            <li class="layui-nav-item" lay-header-event="menuRight" lay-unselect>
-                <a href="javascript:;">
-                    <i class="layui-icon layui-icon-more-vertical"></i>
+            <li class="layui-nav-item">
+                <a href="/page/character">
+                    <i class="layui-icon layui-icon-set"></i>
                 </a>
             </li>
         </ul>
@@ -29,7 +29,7 @@
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
             <ul class="layui-nav layui-nav-tree" lay-filter="test">
-                <li th:each="menu : ${(T(site.minnan.mp.infrastructure.config.MvcConfig)).getMenu()}"
+                <li th:each="menu : ${(T(site.minnan.mp.infrastructure.config.PageConfig)).getMenu()}"
                     class="layui-nav-item"
                     th:classappend="${#request.getRequestURI() == menu.url} ? 'layui-this' : ''">
                     <a th:text="${menu.label}" th:href="${menu.url}"></a>

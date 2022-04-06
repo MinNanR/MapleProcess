@@ -3,7 +3,7 @@ layui.use(['element', 'layer', 'util'], function(){
     var element = layui.element
         ,layer = layui.layer
         ,util = layui.util
-        ,$ = layui.$;
+        // ,$ = layui.$;
 
     //头部事件
     util.event('lay-header-event', {

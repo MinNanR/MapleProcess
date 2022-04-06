@@ -1,6 +1,9 @@
 package site.minnan.mp.applicaiton.service;
 
 import site.minnan.mp.domain.aggregate.Character;
+import site.minnan.mp.domain.entity.CharacterInfo;
+import site.minnan.mp.userinterface.dto.AddCharacterDTO;
+import site.minnan.mp.userinterface.dto.QueryCharacterInfoDTO;
 
 import java.util.List;
 
@@ -15,4 +18,24 @@ public interface CharacterService {
      * 查询角色列表
      */
     List<Character> getCharacterList();
+
+    /**
+     * 获取当前查看的角色
+     *
+     * @return
+     */
+    Character getCurrentCharacter();
+
+    /**
+     * 添加角色
+     */
+    void addCharacter(AddCharacterDTO dto);
+
+    /**
+     * 远程查询角色信息
+     *
+     * @param dto
+     * @return
+     */
+    CharacterInfo getCharacterInfo(QueryCharacterInfoDTO dto);
 }
