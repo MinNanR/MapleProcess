@@ -26,9 +26,15 @@ public class CharacterInfo {
      */
     private Integer level;
 
+    /**
+     * 角色图片地址
+     */
+    private String characterImageUrl;
+
     public CharacterInfo(JSONObject json) {
         this.characterName = json.getStr("Name");
         this.job = json.getStr("Class");
         this.level = json.getInt("Level");
+        this.characterImageUrl = json.getStr("CharacterImageURL");
     }
 }

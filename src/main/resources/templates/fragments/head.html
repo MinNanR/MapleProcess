@@ -13,7 +13,7 @@
                 </a>
                 <dl class="layui-nav-child">
                     <dd th:each="character : ${@characterService.getCharacterList()}">
-                        <a th:text="${character.characterName}"></a>
+                        <a th:text="${character.characterName}" th:href="'javascript:switchCharacter(' +  ${character.id}+')'"></a>
                     </dd>
                 </dl>
             </li>
@@ -39,4 +39,5 @@
     </div>
 </header>
 </body>
+
 </html>

@@ -37,4 +37,10 @@ public class Character {
      */
     @Column(name = "current", columnDefinition = "int default 0")
     private Integer current;
+
+    public static Character ofCurrent(){
+        Character character = new Character();
+        character.setCurrent(1);
+        return character;
+    }
 }

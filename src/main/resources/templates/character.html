@@ -15,9 +15,9 @@
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
             <div>
-                <button type="button" class="layui-btn layui-btn-sm" id="addBtn">
+                <a href="/page/addCharacter" type="button" class="layui-btn layui-btn-sm" id="addBtn">
                     <i class="layui-icon">&#xe654;</i>
-                </button>
+                </a>
             </div>
             <table class="layui-table">
                 <colgroup>
@@ -42,118 +42,8 @@
             </table>
         </div>
     </div>
-
-    <script src="/layui/layui.js"></script>
-    <script src="/js/head.js"></script>
-</div>
-<div id="addForm" style="display: none">
-    <div style="padding: 15px">
-        <form class="layui-form">
-            <div class="layui-form-item">
-                <label class="layui-form-label">角色名</label>
-                <div class="layui-input-block">
-                    <input type="text" id="characterName" name="characterName" placeholder="请输入角色名称"
-                           autocomplete="off" class="layui-input" lay-verify="required">
-                </div>
-            </div>
-            <div class="layui-form-item">
-                <label class="layui-form-label">职业</label>
-                <div class="layui-input-block">
-                    <input type="text" id="job" name="job" class="layui-input" lay-verify="required" disabled>
-                    <!--                    <div style="vertical-align: center">-->
-                    <!--                        <p id="job"></p>-->
-                    <!--                    </div>-->
-                </div>
-            </div>
-            <div>
-                <label class="layui-form-label">等级</label>
-                <div class="layui-input-block">
-                    <input type="text" id="level" name="level" class="layui-input" lay-verify="required" disabled>
-                    <!--                    <p id="level"></p>-->
-                </div>
-            </div>
-            <div class="layui-form-item" style="margin-top: 20px;">
-                <div class="layui-input-block">
-                    <button id="submitBtn" class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
-                    <button class="layui-btn layui-btn-primary">重置</button>
-                </div>
-            </div>
-        </form>
-    </div>
 </div>
 </body>
 <script src="/layui/layui.js"></script>
 <script src="/js/head.js"></script>
-<script type="text/javascript">
-    layui.use('form', function () {
-        var form = layui.form
-        form.on('submit(formDemo)', function (data) {
-            let layer;
-            var layerIndex;
-            layui.use('layer', function () {
-                layer = layui.layer
-                layerIndex = layer.open({
-                    type: 3,
-                    title: "加载中",
-                    area: ['500px', '300px']
-                })
-            })
-            var field = data.field
-            request.post("/api/addCharacter", {
-                characterName: field.characterName,
-                job: field.job,
-                level: field.level
-            })
-            .then(response => {
-                alert(response)
-                location.reload()
-            })
-            .catch(err => {
-                alert(err)
-                layer.close(layerIndex)
-            })
-            return false;
-        })
-    })
-
-    $('#addBtn').on('click', function () {
-        $('addForm').style = ''
-        layui.use('layer', function () {
-            var layer = layui.layer
-            layer.open({
-                type: 1,
-                title: "添加角色",
-                area: ['500px', '300px'],
-                content: $('#addForm')
-            })
-        })
-    })
-
-    $('#characterName').on('blur', function () {
-        var inputEle = $('#characterName');
-        let layer;
-        var layerIndex;
-        layui.use('layer', function () {
-            layer = layui.layer
-            layerIndex = layer.open({
-                type: 3,
-                title: "加载中",
-                area: ['500px', '300px']
-            })
-        })
-        request.post("/api/getCharacterInfo", {characterName: inputEle.val()})
-            .then(response => {
-                let job = response.job
-                let level = response.level
-                $('#job').attr('value', job)
-                $('#level').attr('value', level)
-                layer.close(layerIndex)
-            })
-            .catch(err => {
-                layer.close(layerIndex)
-                alert(err)
-            })
-    })
-
-</script>
 </html>

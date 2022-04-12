@@ -2,7 +2,9 @@ package site.minnan.mp.applicaiton.service;
 
 import site.minnan.mp.domain.aggregate.Character;
 import site.minnan.mp.domain.entity.CharacterInfo;
+import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 import site.minnan.mp.userinterface.dto.AddCharacterDTO;
+import site.minnan.mp.userinterface.dto.DetailsQueryDTO;
 import site.minnan.mp.userinterface.dto.QueryCharacterInfoDTO;
 
 import java.util.List;
@@ -38,4 +40,14 @@ public interface CharacterService {
      * @return
      */
     CharacterInfo getCharacterInfo(QueryCharacterInfoDTO dto);
+
+    /**
+     * 切换角色
+     */
+    void switchCharacter(DetailsQueryDTO dto);
+
+    /**
+     * 获取当前角色岛球列表
+     */
+    List<ArcaneType> getCurrentCharacterArcType();
 }

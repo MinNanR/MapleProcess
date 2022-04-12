@@ -12,7 +12,63 @@
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
-            <div>岛球</div>
+            <table class="layui-table">
+                <colgroup>
+                    <col width="50">
+                    <col width="200">
+                    <col width="200">
+                    <col width="200">
+                    <col width="200">
+                    <col width="200">
+                    <col width="200">
+                    <col width="200">
+                    <col width="200">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>岛球</th>
+                    <th>当前等级</th>
+                    <th>当前个数/升级所需个数</th>
+                    <th>当前总个数/满级所需个数</th>
+                    <th>按照过去1天肝度，到下一级所需天数</th>
+                    <th>按照过去7天肝度，到下一级所需天数</th>
+                    <th>按照过去1天肝度，到达满级天数</th>
+                    <th>按照过去7天肝度，到达满级天数</th>
+                </tr>
+                </thead>
+                <tbody>
+<!--                <tr th:each="character : ${characterList}">-->
+<!--                    <td th:text="${character.characterName}"></td>-->
+<!--                    <td th:text="${character.job}"></td>-->
+<!--                    <td th:text="${character.level}"></td>-->
+<!--                </tr>-->
+                <tr>
+                    <td>1</td>
+                    <td>消亡旅途</td>
+                    <td>1</td>
+                    <td>1/12</td>
+                    <td>1/133</td>
+                    <td>133</td>
+                    <td>133</td>
+                    <td>133</td>
+                    <td>133</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="addForm">
+            <div style="padding: 15px">
+                <form class="layui-form">
+                    <div class="layui-form-item" th:each="arcType : ${currentList}">
+                        <label class="layui-form-label" th:text="${arcType.getChineseName()}"></label>
+                        <div class="layui-input-block">
+                            <input type="text" id="characterName" name="characterName" placeholder="输入今天获取的岛球"
+                                   autocomplete="off" class="layui-input" lay-verify="required">
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -20,4 +76,6 @@
     <script src="/js/head.js"></script>
 </div>
 </body>
+
+
 </html>

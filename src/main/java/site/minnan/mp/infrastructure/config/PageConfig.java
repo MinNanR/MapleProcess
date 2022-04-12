@@ -29,7 +29,8 @@ public class PageConfig implements WebMvcConfigurer {
      */
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        menuList.forEach(e -> registry.addViewController(e.getUrl()).setViewName(e.getViewName()));
+        registry.addViewController("/page/index").setViewName("index");
+        registry.addViewController("/page/addCharacter").setViewName("addCharacter");
     }
 
     private static final List<Menu> menuList;

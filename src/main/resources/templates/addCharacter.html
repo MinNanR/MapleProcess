@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>添加角色</title>
+    <script type="text/javascript" src="/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/js/request.js"></script>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <script src="/layui/layui.js"></script>
+    <script src="/js/head.js"></script>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="fragments/head::header"></div>
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">角色名</label>
+                    <div class="layui-input-inline" style="width: 200px;">
+                        <input type="text" id="queryInput" name="characterName" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <button id="queryBtn" class="layui-btn  layui-btn-normal">查询</button>
+                    <a type="button" href="/page/character" class="layui-btn layui-btn-danger">后退</a>
+                </div>
+            </div>
+        </div>
+        <div class="layui-container" id="info-div" style="font-size: 25px;display: none;margin: 0">
+            <div class="layui-row">
+                <img id="characterImage" src="" />
+            </div>
+            <div class="layui-row">
+                <div class="layui-col-md1">
+                    角色：
+                </div>
+                <div class="layui-col-md10" id="characterNameDiv">
+
+                </div>
+            </div>
+            <div class="layui-row" style="margin-top: 10px">
+                <div class="layui-col-md1">
+                    职业：
+                </div>
+                <div class="layui-col-md10" id="jobDiv">
+
+                </div>
+            </div>
+            <div class="layui-row" style="margin-top: 10px">
+                <div class="layui-col-md1">
+                    等级：
+                </div>
+                <div class="layui-col-md10" id="levelDiv">
+
+                </div>
+            </div>
+            <div style="margin-top: 30px;">
+                <button class="layui-btn" id="submitBtn">确认添加</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+<script>
+    $("#queryBtn").on('click', function () {
+        var queryString = $("#queryInput").val()
+        if (queryString === '') {
+            layer.msg("角色名不嫩为空")
+            return
+        }
+        var layerIndex = layer.load(1)
+        request.post("/api/getCharacterInfo", {characterName: queryString})
+            .then(data => {
+                var characterNameDiv = $("#characterNameDiv");
+                var jobDiv = $("#jobDiv");
+                var levelDiv = $("#levelDiv")
+                var characterImageImg = $("#characterImage")
+
+                characterNameDiv.html("")
+                jobDiv.html("")
+                levelDiv.html("")
+                characterImageImg.attr("src", "")
+                characterNameDiv.html(data.characterName)
+                jobDiv.html(data.job)
+                levelDiv.html(data.level)
+                characterImageImg.attr("src", data.characterImageUrl)
+
+
+                $('#info-div').css("display", "block")
+                layer.close(layerIndex)
+                // closeLayer()
+            })
+    })
+
+    $('#submitBtn').on('click', function () {
+        var characterNameDiv = $("#characterNameDiv");
+        var jobDiv = $("#jobDiv");
+        var levelDiv = $("#levelDiv")
+
+        var param = {
+            characterName: characterNameDiv.html(),
+            job: jobDiv.html(),
+            level: levelDiv.html()
+        }
+
+        request.post("/api/addCharacter", param)
+            .then(response => {
+                location.href = "/page/character"
+            })
+            .catch(err => {
+                layer.alert(err)
+            })
+    })
+</script>
+</html>

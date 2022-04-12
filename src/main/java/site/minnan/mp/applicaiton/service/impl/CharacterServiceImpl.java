@@ -3,10 +3,9 @@ package site.minnan.mp.applicaiton.service.impl;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import site.minnan.mp.applicaiton.service.CharacterService;
@@ -16,11 +15,12 @@ import site.minnan.mp.domain.repository.CharacterRepository;
 import site.minnan.mp.infrastructure.exception.EntityAlreadyExistException;
 import site.minnan.mp.infrastructure.exception.EntityNotExistException;
 import site.minnan.mp.userinterface.dto.AddCharacterDTO;
+import site.minnan.mp.userinterface.dto.DetailsQueryDTO;
 import site.minnan.mp.userinterface.dto.QueryCharacterInfoDTO;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 角色service
@@ -40,7 +40,6 @@ public class CharacterServiceImpl implements CharacterService {
      * 查询角色列表
      */
     @Override
-    @Cacheable("characterList")
     public List<Character> getCharacterList() {
         return characterRepository.findAll();
     }
@@ -51,11 +50,8 @@ public class CharacterServiceImpl implements CharacterService {
      * @return
      */
     @Override
-    @Cacheable("currentCharacter")
     public Character getCurrentCharacter() {
-        Character character = new Character();
-        character.setCurrent(1);
-        Optional<Character> opt = characterRepository.findOne(Example.of(character));
+        Optional<Character> opt = characterRepository.findOne(Example.of(Character.ofCurrent()));
         return opt.orElseGet(Character::new);
     }
 
@@ -65,7 +61,6 @@ public class CharacterServiceImpl implements CharacterService {
      * @param dto
      */
     @Override
-    @CacheEvict("characterList")
     public void addCharacter(AddCharacterDTO dto) {
         Character character = new Character();
         character.setCharacterName(dto.getCharacterName());
@@ -90,6 +85,50 @@ public class CharacterServiceImpl implements CharacterService {
             throw new EntityAlreadyExistException("角色已存在");
         }
 
+        JSONObject characterData = queryCharacterInfo(characterName);
+
+        return new CharacterInfo(characterData);
+    }
+
+
+    /**
+     * 切换角色
+     *
+     * @param dto
+     */
+    @Override
+    public void switchCharacter(DetailsQueryDTO dto) {
+        List<Character> allCharacter = characterRepository.findAll();
+        allCharacter.forEach(e -> e.setCurrent(0));
+        characterRepository.saveAll(allCharacter);
+
+        Optional<Character> current = characterRepository.findById(dto.getId());
+        current.ifPresent(e -> {
+            e.setCurrent(1);
+            characterRepository.save(e);
+        });
+    }
+
+    /**
+     * 获取当前角色岛球列表
+     */
+    @Override
+    public List<ArcaneType> getCurrentCharacterArcType() {
+        Optional<Character> currentCharacter = characterRepository.findOne(Example.of(Character.ofCurrent()));
+        if (currentCharacter.isPresent()) {
+            Character character = currentCharacter.get();
+            JSONObject characterData = queryCharacterInfo(character.getCharacterName());
+            Integer currentLevel = characterData.getInt("Level");
+            return EnumSet.allOf(ArcaneType.class).stream()
+                    .filter(e -> currentLevel >= e.getMinLevel())
+                    .sorted(Comparator.comparingInt(ArcaneType::getOrdinal))
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    private JSONObject queryCharacterInfo(String characterName){
         String queryUrl = QUERY_BY_NAME_BASE_URL + characterName;
         byte[] responseBytes = HttpUtil.get(queryUrl).getBytes(StandardCharsets.UTF_8);
 
@@ -105,6 +144,6 @@ public class CharacterServiceImpl implements CharacterService {
             throw new EntityNotExistException("角色不存在");
         }
 
-        return new CharacterInfo(characterData);
+        return characterData;
     }
 }
