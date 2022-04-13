@@ -1,21 +1,16 @@
 package site.minnan.mp.userinterface.fascade;
 
-import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import site.minnan.mp.applicaiton.service.CharacterService;
-import site.minnan.mp.domain.aggregate.Character;
 import site.minnan.mp.domain.entity.CharacterInfo;
-import site.minnan.mp.userinterface.dto.AddCharacterDTO;
+import site.minnan.mp.userinterface.dto.character.AddCharacterDTO;
 import site.minnan.mp.userinterface.dto.DetailsQueryDTO;
-import site.minnan.mp.userinterface.dto.QueryCharacterInfoDTO;
+import site.minnan.mp.userinterface.dto.character.QueryCharacterInfoDTO;
 import site.minnan.mp.userinterface.response.ResponseEntity;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * 角色控制器

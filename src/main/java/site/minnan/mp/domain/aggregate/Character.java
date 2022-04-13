@@ -4,6 +4,11 @@ import lombok.Data;
 
 import javax.persistence.*;
 
+/***
+ * 角色实体类
+ *
+ * @author Minnan on 2022/03/31
+ */
 @Entity
 @Table(name = "maple_character")
 @Data

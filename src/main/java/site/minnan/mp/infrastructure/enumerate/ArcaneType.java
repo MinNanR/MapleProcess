@@ -1,5 +1,7 @@
 package site.minnan.mp.infrastructure.enumerate;
 
+import cn.hutool.core.util.StrUtil;
+
 /**
  * 岛球地图类型
  *
@@ -45,5 +47,9 @@ public enum ArcaneType {
 
     public Integer getMinLevel() {
         return minLevel;
+    }
+
+    public String label(){
+        return StrUtil.format("{}({}岛)", chineseName, ordinal);
     }
 }

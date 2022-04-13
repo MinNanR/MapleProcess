@@ -3,9 +3,9 @@ package site.minnan.mp.applicaiton.service;
 import site.minnan.mp.domain.aggregate.Character;
 import site.minnan.mp.domain.entity.CharacterInfo;
 import site.minnan.mp.infrastructure.enumerate.ArcaneType;
-import site.minnan.mp.userinterface.dto.AddCharacterDTO;
+import site.minnan.mp.userinterface.dto.character.AddCharacterDTO;
 import site.minnan.mp.userinterface.dto.DetailsQueryDTO;
-import site.minnan.mp.userinterface.dto.QueryCharacterInfoDTO;
+import site.minnan.mp.userinterface.dto.character.QueryCharacterInfoDTO;
 
 import java.util.List;
 

@@ -3,8 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script type="text/javascript" src="/jquery-3.6.0.min.js"></script>
     <title>layout 管理系统大布局 - Layui</title>
     <link rel="stylesheet" href="/layui/css/layui.css">
+    <script src="/layui/layui.js"></script>
+    <script src="/js/head.js"></script>
+    <script src="/js/request.js"></script>
 </head>
 <body>
 <div class="layui-layout layui-layout-admin">
@@ -12,6 +16,11 @@
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
+            <div>
+                <button class="layui-btn layui-btn-sm" id="addBtn">
+                    <i class="layui-icon">&#xe654;</i>
+                </button>
+            </div>
             <table class="layui-table">
                 <colgroup>
                     <col width="50">
@@ -38,11 +47,11 @@
                 </tr>
                 </thead>
                 <tbody>
-<!--                <tr th:each="character : ${characterList}">-->
-<!--                    <td th:text="${character.characterName}"></td>-->
-<!--                    <td th:text="${character.job}"></td>-->
-<!--                    <td th:text="${character.level}"></td>-->
-<!--                </tr>-->
+                <!--                <tr th:each="character : ${characterList}">-->
+                <!--                    <td th:text="${character.characterName}"></td>-->
+                <!--                    <td th:text="${character.job}"></td>-->
+                <!--                    <td th:text="${character.level}"></td>-->
+                <!--                </tr>-->
                 <tr>
                     <td>1</td>
                     <td>消亡旅途</td>
@@ -57,25 +66,53 @@
                 </tbody>
             </table>
         </div>
-        <div id="addForm">
-            <div style="padding: 15px">
-                <form class="layui-form">
-                    <div class="layui-form-item" th:each="arcType : ${currentList}">
-                        <label class="layui-form-label" th:text="${arcType.getChineseName()}"></label>
-                        <div class="layui-input-block">
-                            <input type="text" id="characterName" name="characterName" placeholder="输入今天获取的岛球"
-                                   autocomplete="off" class="layui-input" lay-verify="required">
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
     </div>
-
-    <script src="/layui/layui.js"></script>
-    <script src="/js/head.js"></script>
 </div>
 </body>
+<div id="addForm" style="display: none">
+    <div style="padding: 15px">
+        <form class="layui-form">
+            <div class="layui-form-item" th:each="arcType : ${currentList}">
+                <label class="layui-form-label" th:text="${arcType.label()}" style="width: 100px;"></label>
+                <div class="layui-input-inline">
+                    <input type="text" th:id="${arcType.name()}" th:name="${arcType.name()}" placeholder="输入今天获取的岛球"
+                           autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-word-aux">个</div>
+            </div>
+            <div class="layui-form-item">
+                <button id="submitBtn" class="layui-btn" style="width: 70%;margin-left: 15%" lay-submit
+                        lay-filter="addForm">提交
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
 
+    $('#addBtn').on('click', function () {
+        $("#addForm").style = ""
+        layer.open({
+            type: 1,
+            content: $('#addForm'),
+            title: "填写今日岛球进度",
+            area: ['400px', '500px']
+        })
+    })
+
+    layui.use("form", function () {
+        var form = layui.form
+        form.on("submit(addForm)", function (data) {
+            request.post("/api/arc/addArcaneAttainRecord", data.field)
+            .then(response => {
+                layer.msg("success")
+            }).catch(err => {
+                layer.error(err)
+            })
+            return false;
+        })
+    })
+
+</script>
 
 </html>

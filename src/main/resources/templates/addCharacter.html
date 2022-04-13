@@ -70,7 +70,7 @@
     $("#queryBtn").on('click', function () {
         var queryString = $("#queryInput").val()
         if (queryString === '') {
-            layer.msg("角色名不嫩为空")
+            layer.msg("角色名不能为空")
             return
         }
         var layerIndex = layer.load(1)

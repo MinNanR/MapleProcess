@@ -1,4 +1,4 @@
-package site.minnan.mp.userinterface.dto;
+package site.minnan.mp.userinterface.dto.character;
 
 import lombok.Data;
 

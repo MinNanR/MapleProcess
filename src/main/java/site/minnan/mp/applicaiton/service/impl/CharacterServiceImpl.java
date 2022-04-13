@@ -14,9 +14,9 @@ import site.minnan.mp.domain.entity.CharacterInfo;
 import site.minnan.mp.domain.repository.CharacterRepository;
 import site.minnan.mp.infrastructure.exception.EntityAlreadyExistException;
 import site.minnan.mp.infrastructure.exception.EntityNotExistException;
-import site.minnan.mp.userinterface.dto.AddCharacterDTO;
+import site.minnan.mp.userinterface.dto.character.AddCharacterDTO;
 import site.minnan.mp.userinterface.dto.DetailsQueryDTO;
-import site.minnan.mp.userinterface.dto.QueryCharacterInfoDTO;
+import site.minnan.mp.userinterface.dto.character.QueryCharacterInfoDTO;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
