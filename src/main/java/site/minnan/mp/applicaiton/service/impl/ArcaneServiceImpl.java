@@ -140,4 +140,20 @@ public class ArcaneServiceImpl implements ArcaneService {
         arcaneRepository.saveAll(arcaneList);
 
     }
+
+    /**
+     * 获取岛球信息列表
+     *
+     * @return
+     */
+    @Override
+    public List<Arcane> getArcaneList() {
+        Optional<Character> characterOpt = characterRepository.findCurrent();
+        if (!characterOpt.isPresent()) {
+            throw new EntityNotExistException("未指定角色");
+        }
+
+        Character character = characterOpt.get();
+        return arcaneRepository.findAllByCharacterIdIs(character.getId());
+    }
 }

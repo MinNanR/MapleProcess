@@ -1,5 +1,6 @@
 package site.minnan.mp.domain.aggregate;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.stream.Stream;
 @Table(name = "maple_arcane")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class Arcane {
 
