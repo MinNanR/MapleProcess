@@ -6,7 +6,10 @@ package site.minnan.mp.domain.aggregate;
  * @author Minnan on 2022/04/13
  */
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 
 import javax.persistence.*;
@@ -21,6 +24,8 @@ import java.util.Date;
 @Entity
 @Table(name = "maple_arcane_attain_record")
 @Data
+@Builder
+@NoArgsConstructor
 public class ArcaneAttainRecord {
 
     /**

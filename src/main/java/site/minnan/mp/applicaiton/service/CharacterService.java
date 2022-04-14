@@ -1,5 +1,6 @@
 package site.minnan.mp.applicaiton.service;
 
+import cn.hutool.json.JSONObject;
 import site.minnan.mp.domain.aggregate.Character;
 import site.minnan.mp.domain.entity.CharacterInfo;
 import site.minnan.mp.infrastructure.enumerate.ArcaneType;
@@ -50,4 +51,12 @@ public interface CharacterService {
      * 获取当前角色岛球列表
      */
     List<ArcaneType> getCurrentCharacterArcType();
+
+    /**
+     * 查询角色
+     *
+     * @param characterName
+     * @return
+     */
+    JSONObject queryCharacterInfo(String characterName);
 }

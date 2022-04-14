@@ -1,10 +1,14 @@
 package site.minnan.mp.domain.aggregate;
 
+import lombok.Builder;
 import lombok.Data;
-import org.checkerframework.checker.units.qual.C;
+import lombok.NoArgsConstructor;
 import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * 当前岛球数量表
@@ -14,6 +18,8 @@ import javax.persistence.*;
 @Entity
 @Table(name = "maple_arcane")
 @Data
+@NoArgsConstructor
+@Builder
 public class Arcane {
 
     @Id
@@ -61,10 +67,22 @@ public class Arcane {
         return level * level + 11;
     }
 
+    /**
+     * 岛球升级所需数量需求表
+     */
+    private static final Map<Integer, Integer> needMap;
+
+    static {
+        needMap = new HashMap<>();
+        for (int i = 1; i <= 20; i++) {
+            needMap.put(i, i * i + 11);
+        }
+    }
+
     public int calculateStartCurrentCount(int startTotalCount) {
         int i = 1;
-        while (startTotalCount > (i * i + 11)) {
-            startTotalCount -= i * i + 11;
+        while (startTotalCount > (needMap.get(i))) {
+            startTotalCount -= needMap.get(i);
             i++;
         }
         return startTotalCount;
@@ -76,9 +94,13 @@ public class Arcane {
     public void updateLevelInfo(Integer startTotalCount, Integer attain) {
         this.totalCount = startTotalCount + attain;
         int newCurrentCount = calculateStartCurrentCount(startTotalCount) + attain;
-        int countNeed = level * level + 11;
+        int countNeed = needMap.get(level);
         this.currentCount = newCurrentCount % countNeed;
         this.level = level + newCurrentCount / countNeed;
+    }
 
+    public void calculateTotalCount(){
+        int totalCount = Stream.iterate(1, i -> i + 1).mapToInt(needMap::get).limit(level).sum();
+        this.totalCount = totalCount + this.currentCount;
     }
 }

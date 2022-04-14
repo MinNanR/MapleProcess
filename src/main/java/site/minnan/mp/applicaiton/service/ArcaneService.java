@@ -1,7 +1,9 @@
 package site.minnan.mp.applicaiton.service;
 
-import cn.hutool.json.JSONObject;
 import site.minnan.mp.userinterface.dto.arcane.AddAttainRecordDTO;
+import site.minnan.mp.userinterface.dto.arcane.InitArcaneItem;
+
+import java.util.List;
 
 /**
  * 岛球服务
@@ -16,4 +18,12 @@ public interface ArcaneService {
      * @param param
      */
     void addOrUpdateArcaneAttainRecord(AddAttainRecordDTO param);
+
+    /**
+     *
+     * @param list
+     */
+    void addArcane(List<InitArcaneItem> list);
+
+
 }

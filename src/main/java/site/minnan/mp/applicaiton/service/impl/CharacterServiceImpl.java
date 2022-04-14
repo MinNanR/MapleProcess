@@ -128,7 +128,8 @@ public class CharacterServiceImpl implements CharacterService {
         }
     }
 
-    private JSONObject queryCharacterInfo(String characterName){
+
+    public JSONObject queryCharacterInfo(String characterName){
         String queryUrl = QUERY_BY_NAME_BASE_URL + characterName;
         byte[] responseBytes = HttpUtil.get(queryUrl).getBytes(StandardCharsets.UTF_8);
 
