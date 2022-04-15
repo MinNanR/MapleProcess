@@ -29,6 +29,6 @@ public class AttainItem {
      * 判断是否填写了该岛数字
      */
     public boolean isFill() {
-        return attainCount == null;
+        return attainCount != null;
     }
 }

@@ -15,27 +15,33 @@
     <div th:replace="fragments/head::header"></div>
     <div class="layui-body">
         <!-- 内容主体区域 -->
-        <div style="padding: 15px;">
+        <div style="padding: 15px;" th:if="${session.currentCharacter} != null">
             <th:block th:if="${#lists.isEmpty(arcaneList)}">
                 <div>
-                    请初始化当前岛球信息
+                    <h2>请初始化当前岛球信息</h2>
+                    <h4>未开启的岛球可以不填</h4>
                 </div>
-                <div id="initForm">
-                    <form class="layui-form">
+                <div style="margin-top: 30px">
+                    <form class="layui-form" id="initForm" action="">
                         <div class="layui-form-item" th:each="arcType : ${allArcaneType}">
                             <label class="layui-form-label" th:text="${arcType.label()}" style="width: 100px;"></label>
                             <div class="layui-input-inline">
-                                <input type="text" th:id="'level' + ${arcType.name()}"
-                                       th:name="'level' + ${arcType.name()}" placeholder="请输入当前岛球等级"
+                                <input type="text" th:id="'level-' + ${arcType.name()}"
+                                       th:name="'level-' + ${arcType.name()}" placeholder="请输入当前岛球等级"
+                                       data-type="level"
                                        autocomplete="off" class="layui-input">
                             </div>
-                            <div class="layui-word-aux">级</div>
+                            <div class="layui-form-mid">级</div>
                             <div class="layui-input-inline">
-                                <input type="text" th:id="'count' + ${arcType.name()}"
-                                       th:name="'count' + ${arcType.name()}" placeholder="请输入当前岛球数量"
+                                <input type="text" th:id="'count-' + ${arcType.name()}"
+                                       th:name="'count-' + ${arcType.name()}" placeholder="请输入当前岛球数量"
+                                       data-type="count"
                                        autocomplete="off" class="layui-input">
                             </div>
                             <div class="layui-word-aux">个</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <button id="initSubmit" class="layui-btn" lay-filter="initForm" lay-submit>提交</button>
                         </div>
                     </form>
                 </div>
@@ -65,18 +71,24 @@
                         <th>当前等级</th>
                         <th>当前个数/升级所需个数</th>
                         <th>当前总个数/满级所需个数</th>
-                        <th>按照过去1天肝度，到下一级所需天数</th>
+                        <th>按照过去3天肝度，到下一级所需天数</th>
                         <th>按照过去7天肝度，到下一级所需天数</th>
-                        <th>按照过去1天肝度，到达满级天数</th>
+                        <th>按照过去3天肝度，到达满级天数</th>
                         <th>按照过去7天肝度，到达满级天数</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <!--                <tr th:each="character : ${characterList}">-->
-                    <!--                    <td th:text="${character.characterName}"></td>-->
-                    <!--                    <td th:text="${character.job}"></td>-->
-                    <!--                    <td th:text="${character.level}"></td>-->
-                    <!--                </tr>-->
+                    <tr th:each="arcane, itr : ${arcaneList}">
+                        <td th:text="${itr.index}"></td>
+                        <td th:text="${arcane.arcaneType.label()}"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                     <tr>
                         <td>1</td>
                         <td>消亡旅途</td>
@@ -92,12 +104,21 @@
                 </table>
             </th:block>
         </div>
+        <div style="padding: 15px" th:if="${session.currentCharacter} == null">
+            <h1>请先选择使用的角色</h1>
+        </div>
     </div>
 </div>
 </body>
 <div id="addForm" style="display: none">
     <div style="padding: 15px">
         <form class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label" style="width: 100px">日期</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="date" name="noteDate" class="layui-input" autocomplete="off">
+                </div>
+            </div>
             <div class="layui-form-item" th:each="arcType : ${currentList}">
                 <label class="layui-form-label" th:text="${arcType.label()}" style="width: 100px;"></label>
                 <div class="layui-input-inline">
@@ -126,18 +147,79 @@
         })
     })
 
-    layui.use("form", function () {
+    layui.use(["form", "laydate"], function () {
         var form = layui.form
+        var laydate = layui.laydate
+
+        laydate.render({
+            elem: "#date"
+        })
+
+        form.on("submit(initForm)", function (data) {
+            let field = data.field
+            let levelMap = {}
+            let countMap = {}
+            for (let key in field) {
+                let nameSplit = key.split("-")
+                let arcaneType = nameSplit[1]
+                let fieldType = nameSplit[0]
+                console.log(arcaneType, fieldType)
+                if (fieldType === 'level') {
+                    levelMap[arcaneType] = field[key]
+                } else if (fieldType === 'count') {
+                    countMap[arcaneType] = field[key]
+                }
+            }
+
+            let dataToSubmit = []
+            for (let arcaneType in levelMap) {
+                dataToSubmit.push({
+                    "arcaneType": arcaneType,
+                    "currentLevel": levelMap[arcaneType],
+                    "currentCount": countMap[arcaneType]
+                })
+            }
+            let layerIndex = layer.load(1)
+            request.post("/api/arc/initArcane", dataToSubmit)
+                .then(response => {
+                    layer.close(layerIndex)
+                    location.reload()
+                })
+                .catch(err => {
+                    layer.msg(err)
+                })
+            return false
+        })
+
         form.on("submit(addForm)", function (data) {
-            request.post("/api/arc/addArcaneAttainRecord", data.field)
+            let field = data.field
+            console.log(field)
+            let attainList = []
+            for (let key in field) {
+                if (key !== 'noteDate') {
+                    attainList.push({
+                        "arcaneType": key,
+                        "attainCount": field[key]
+                    })
+                }
+            }
+            let dataToSubmit = {
+                "noteDate": field["noteDate"],
+                "attainList": attainList
+            }
+            console.log(dataToSubmit)
+            request.post("/api/arc/addArcaneAttainRecord", dataToSubmit)
                 .then(response => {
                     layer.msg("success")
+                    location.reload()
                 }).catch(err => {
                 layer.error(err)
             })
             return false;
         })
+
     })
+
 
 </script>
 

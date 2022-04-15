@@ -23,7 +23,7 @@ public class CacheConfig {
                 .maximumSize(1000);
     }
 
-    @Bean
+    @Bean("cache")
     public CacheManager cacheManager(Caffeine caffeine){
         CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
         caffeineCacheManager.setCaffeine(caffeine);

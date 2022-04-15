@@ -1,4 +1,4 @@
-package site.minnan.mp.infrastructure.log;
+package site.minnan.mp.infrastructure.aop;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;

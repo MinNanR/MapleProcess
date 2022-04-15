@@ -34,6 +34,7 @@ public class ArcaneAttainRecord {
      */
     @Id
     @Column
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
     /**

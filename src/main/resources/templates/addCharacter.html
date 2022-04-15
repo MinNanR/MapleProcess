@@ -32,7 +32,7 @@
         </div>
         <div class="layui-container" id="info-div" style="font-size: 25px;display: none;margin: 0">
             <div class="layui-row">
-                <img id="characterImage" src="" />
+                <img id="characterImage" src=""/>
             </div>
             <div class="layui-row">
                 <div class="layui-col-md1">
@@ -94,6 +94,10 @@
                 $('#info-div').css("display", "block")
                 layer.close(layerIndex)
                 // closeLayer()
+            })
+            .catch(err => {
+                layer.close(layerIndex)
+                layer.msg(err)
             })
     })
 

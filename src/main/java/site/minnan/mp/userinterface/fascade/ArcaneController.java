@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.minnan.mp.applicaiton.service.ArcaneService;
+import site.minnan.mp.infrastructure.annotations.CharacterRequired;
 import site.minnan.mp.userinterface.dto.arcane.AddAttainRecordDTO;
 import site.minnan.mp.userinterface.dto.arcane.AttainItem;
+import site.minnan.mp.userinterface.dto.arcane.InitArcaneItem;
 import site.minnan.mp.userinterface.response.ResponseEntity;
 
 import java.util.List;
@@ -44,8 +46,8 @@ public class ArcaneController {
      * @return
      */
     @PostMapping("initArcane")
-    public ResponseEntity<?> initArcane(@RequestBody List<AttainItem> dto){
-
+    public ResponseEntity<?> initArcane(@RequestBody List<InitArcaneItem> dto){
+        arcaneService.addArcane(dto);
         return ResponseEntity.success();
     }
 

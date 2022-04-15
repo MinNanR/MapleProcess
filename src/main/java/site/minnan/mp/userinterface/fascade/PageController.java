@@ -1,5 +1,6 @@
 package site.minnan.mp.userinterface.fascade;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import site.minnan.mp.applicaiton.service.CharacterService;
 import site.minnan.mp.domain.aggregate.Arcane;
 import site.minnan.mp.domain.aggregate.Character;
 import site.minnan.mp.infrastructure.enumerate.ArcaneType;
+import site.minnan.mp.infrastructure.exception.EntityNotExistException;
 
 import java.util.List;
 
@@ -20,6 +22,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/page")
+@Slf4j
 public class PageController {
 
     @Autowired
@@ -40,12 +43,16 @@ public class PageController {
     public ModelAndView arc() {
         ModelAndView mv = new ModelAndView();
 
-        List<ArcaneType> currentArcList = characterService.getCurrentCharacterArcType();
-        List<Arcane> arcaneList = arcaneService.getArcaneList();
+        try {
+            List<ArcaneType> currentArcList = characterService.getCurrentCharacterArcType();
+            List<Arcane> arcaneList = arcaneService.getArcaneList();
+            mv.addObject("arcaneList", arcaneList);
+            mv.addObject("currentList", currentArcList);
+            mv.addObject("allArcaneType", ArcaneType.values());
+        } catch (EntityNotExistException e) {
+            log.warn("未指定角色");
+        }
 
-        mv.addObject("arcaneList", arcaneList);
-        mv.addObject("currentList", currentArcList);
-        mv.addObject("allArcaneType", ArcaneType.values());
 
         mv.setViewName("arc");
         return mv;

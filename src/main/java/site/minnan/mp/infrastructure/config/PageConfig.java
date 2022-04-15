@@ -1,10 +1,13 @@
 package site.minnan.mp.infrastructure.config;
 
 import cn.hutool.core.collection.ListUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import site.minnan.mp.domain.entity.Menu;
+import site.minnan.mp.infrastructure.interceptor.CharacterInterceptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +20,9 @@ import java.util.List;
 @Configuration
 public class PageConfig implements WebMvcConfigurer {
 
+
+    @Autowired
+    private CharacterInterceptor characterInterceptor;
 
     /**
      * Configure simple automated controllers pre-configured with the response
@@ -31,6 +37,19 @@ public class PageConfig implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/page/index").setViewName("index");
         registry.addViewController("/page/addCharacter").setViewName("addCharacter");
+    }
+
+    /**
+     * Add Spring MVC lifecycle interceptors for pre- and post-processing of
+     * controller method invocations and resource handler requests.
+     * Interceptors can be registered to apply to all requests or be limited
+     * to a subset of URL patterns.
+     *
+     * @param registry
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(characterInterceptor);
     }
 
     private static final List<Menu> menuList;

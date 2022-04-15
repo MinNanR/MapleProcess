@@ -3,9 +3,11 @@ package site.minnan.mp.applicaiton.service.impl;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
-import javafx.scene.shape.Arc;
+import cn.hutool.json.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.minnan.mp.applicaiton.service.ArcaneService;
@@ -15,21 +17,20 @@ import site.minnan.mp.domain.aggregate.ArcaneAttainRecord;
 import site.minnan.mp.domain.aggregate.Character;
 import site.minnan.mp.domain.repository.ArcaneAttainRecordRepository;
 import site.minnan.mp.domain.repository.ArcaneRepository;
-import site.minnan.mp.domain.repository.CharacterRepository;
+import site.minnan.mp.infrastructure.annotations.CharacterRequired;
 import site.minnan.mp.infrastructure.enumerate.ArcaneType;
-import site.minnan.mp.infrastructure.exception.EntityNotExistException;
 import site.minnan.mp.userinterface.dto.arcane.AddAttainRecordDTO;
 import site.minnan.mp.userinterface.dto.arcane.AttainItem;
 import site.minnan.mp.userinterface.dto.arcane.InitArcaneItem;
 
+import javax.persistence.criteria.Path;
+import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 岛球服务
@@ -37,10 +38,8 @@ import java.util.stream.Stream;
  * @author Minnan on 2022/04/13
  */
 @Service
+@Slf4j
 public class ArcaneServiceImpl implements ArcaneService {
-
-    @Autowired
-    private CharacterRepository characterRepository;
 
     @Autowired
     private ArcaneRepository arcaneRepository;
@@ -51,6 +50,9 @@ public class ArcaneServiceImpl implements ArcaneService {
     @Autowired
     private ArcaneAttainRecordRepository recordRepository;
 
+    @Autowired
+    private HttpSession session;
+
     /**
      * 添加或更新岛球获取记录
      *
@@ -58,14 +60,11 @@ public class ArcaneServiceImpl implements ArcaneService {
      */
     @Override
     @Transactional
+    @CharacterRequired
     public void addOrUpdateArcaneAttainRecord(AddAttainRecordDTO dto) {
         List<AttainItem> attainList = dto.getAttainList();
-        Optional<Character> characterOpt = characterRepository.findCurrent();
-        if (!characterOpt.isPresent()) {
-            throw new EntityNotExistException("未指定当前角色");
-        }
 
-        Character character = characterOpt.get();
+        Character character = (Character) session.getAttribute("currentCharacter");
         Integer characterId = character.getId();
 
         Arcane arcQuery = new Arcane();
@@ -112,17 +111,15 @@ public class ArcaneServiceImpl implements ArcaneService {
      * @param list
      */
     @Override
+    @CharacterRequired
     public void addArcane(List<InitArcaneItem> list) {
-        Optional<Character> characterOpt = characterRepository.findCurrent();
-        if (!characterOpt.isPresent()) {
-            throw new EntityNotExistException("未指定角色");
-        }
-
-        Character character = characterOpt.get();
+        Character character = (Character) session.getAttribute("currentCharacter");
         JSONObject characterInfo = characterService.queryCharacterInfo(character.getCharacterName());
         Integer level = characterInfo.getInt("Level");
+
         list.stream()
-                .filter(e -> e.getArcaneType().getMinLevel() > level)
+                .filter(e -> (e.getArcaneType().getMinLevel() > level) ||
+                        e.getCurrentCount() == null || e.getCurrentLevel() == null)
                 .forEach(e -> {
                     e.setCurrentCount(0);
                     e.setCurrentLevel(0);
@@ -133,6 +130,7 @@ public class ArcaneServiceImpl implements ArcaneService {
                 .map(e -> Arcane.builder()
                         .characterId(character.getId())
                         .arcaneType(e.getArcaneType())
+                        .level(e.getCurrentLevel())
                         .currentCount(e.getCurrentCount())
                         .build())
                 .peek(Arcane::calculateTotalCount)
@@ -147,13 +145,20 @@ public class ArcaneServiceImpl implements ArcaneService {
      * @return
      */
     @Override
+    @CharacterRequired
     public List<Arcane> getArcaneList() {
-        Optional<Character> characterOpt = characterRepository.findCurrent();
-        if (!characterOpt.isPresent()) {
-            throw new EntityNotExistException("未指定角色");
-        }
+        Character character = (Character) session.getAttribute("currentCharacter");
 
-        Character character = characterOpt.get();
-        return arcaneRepository.findAllByCharacterIdIs(character.getId());
+        List<Arcane> arcaneList = arcaneRepository.findAllByCharacterIdIs(character.getId());
+        Specification<ArcaneAttainRecord> specification = ((root, query, criteriaBuilder) -> {
+            Date timePass = DateUtil.offsetDay(DateTime.now(), -7);
+            criteriaBuilder.equal(root.get("characterId"), character.getId());
+            Path<Object> noteDate = root.get("noteDate");
+            return criteriaBuilder.greaterThanOrEqualTo(noteDate.as(Date.class), timePass);
+        });
+
+        List<ArcaneAttainRecord> all = recordRepository.findAll(specification);
+        log.info("数据{}", JSONUtil.toJsonStr(all));
+        return arcaneList;
     }
 }

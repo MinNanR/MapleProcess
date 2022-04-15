@@ -48,4 +48,8 @@ public class Character {
         character.setCurrent(1);
         return character;
     }
+
+    public String astring(){
+        return "test";
+    }
 }

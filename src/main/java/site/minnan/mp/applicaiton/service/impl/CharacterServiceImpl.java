@@ -3,6 +3,10 @@ package site.minnan.mp.applicaiton.service.impl;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,7 @@ import site.minnan.mp.domain.entity.CharacterInfo;
 import site.minnan.mp.domain.repository.CharacterRepository;
 import site.minnan.mp.infrastructure.exception.EntityAlreadyExistException;
 import site.minnan.mp.infrastructure.exception.EntityNotExistException;
+import site.minnan.mp.infrastructure.utils.CharacterUtils;
 import site.minnan.mp.userinterface.dto.character.AddCharacterDTO;
 import site.minnan.mp.userinterface.dto.DetailsQueryDTO;
 import site.minnan.mp.userinterface.dto.character.QueryCharacterInfoDTO;
@@ -34,7 +39,13 @@ public class CharacterServiceImpl implements CharacterService {
     @Autowired
     private CharacterRepository characterRepository;
 
-    private static final String QUERY_BY_NAME_BASE_URL = "https://api.maplestory.gg/v2/public/character/gms/";
+
+    @Autowired
+    @Qualifier(value = "cache")
+    private CacheManager caffeine;
+
+    @Autowired
+    private CharacterUtils characterUtils;
 
     /**
      * 查询角色列表
@@ -130,21 +141,6 @@ public class CharacterServiceImpl implements CharacterService {
 
 
     public JSONObject queryCharacterInfo(String characterName){
-        String queryUrl = QUERY_BY_NAME_BASE_URL + characterName;
-        byte[] responseBytes = HttpUtil.get(queryUrl).getBytes(StandardCharsets.UTF_8);
-
-        if (responseBytes.length == 0) {
-            log.warn("查询失败，查询角色：{}", characterName);
-            throw new EntityNotExistException("角色不存在");
-        }
-
-        JSONObject responseJson = JSONUtil.parseObj(new String(responseBytes));
-        JSONObject characterData = responseJson.getJSONObject("CharacterData");
-        if (characterData == null) {
-            log.warn("查询失败");
-            throw new EntityNotExistException("角色不存在");
-        }
-
-        return characterData;
+        return characterUtils.queryCharacterInfo(characterName);
     }
 }
