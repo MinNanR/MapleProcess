@@ -1,6 +1,7 @@
 package site.minnan.mp.applicaiton.service;
 
 import site.minnan.mp.domain.aggregate.Arcane;
+import site.minnan.mp.domain.vo.ArcaneListVO;
 import site.minnan.mp.userinterface.dto.arcane.AddAttainRecordDTO;
 import site.minnan.mp.userinterface.dto.arcane.InitArcaneItem;
 
@@ -30,5 +31,5 @@ public interface ArcaneService {
      *
      * @return
      */
-    List<Arcane> getArcaneList();
+    List<ArcaneListVO> getArcaneList();
 }

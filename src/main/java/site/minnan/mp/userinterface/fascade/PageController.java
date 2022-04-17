@@ -10,10 +10,13 @@ import site.minnan.mp.applicaiton.service.ArcaneService;
 import site.minnan.mp.applicaiton.service.CharacterService;
 import site.minnan.mp.domain.aggregate.Arcane;
 import site.minnan.mp.domain.aggregate.Character;
+import site.minnan.mp.domain.vo.ArcaneListVO;
+import site.minnan.mp.domain.vo.AttainChartDataVO;
 import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 import site.minnan.mp.infrastructure.exception.EntityNotExistException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 页面controller
@@ -45,10 +48,13 @@ public class PageController {
 
         try {
             List<ArcaneType> currentArcList = characterService.getCurrentCharacterArcType();
-            List<Arcane> arcaneList = arcaneService.getArcaneList();
+            List<ArcaneListVO> arcaneList = arcaneService.getArcaneList();
             mv.addObject("arcaneList", arcaneList);
             mv.addObject("currentList", currentArcList);
             mv.addObject("allArcaneType", ArcaneType.values());
+
+            List<AttainChartDataVO> chartDataList = arcaneList.stream().map(e -> e.getAttainChartData()).collect(Collectors.toList());
+            mv.addObject("chartDataList", chartDataList);
         } catch (EntityNotExistException e) {
             log.warn("未指定角色");
         }

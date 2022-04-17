@@ -1,9 +1,9 @@
 package site.minnan.mp.applicaiton.service.impl;
 
+import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -17,6 +17,8 @@ import site.minnan.mp.domain.aggregate.ArcaneAttainRecord;
 import site.minnan.mp.domain.aggregate.Character;
 import site.minnan.mp.domain.repository.ArcaneAttainRecordRepository;
 import site.minnan.mp.domain.repository.ArcaneRepository;
+import site.minnan.mp.domain.vo.ArcaneListVO;
+import site.minnan.mp.domain.vo.AttainChartDataVO;
 import site.minnan.mp.infrastructure.annotations.CharacterRequired;
 import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 import site.minnan.mp.userinterface.dto.arcane.AddAttainRecordDTO;
@@ -27,10 +29,9 @@ import javax.persistence.criteria.Path;
 import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 岛球服务
@@ -146,19 +147,71 @@ public class ArcaneServiceImpl implements ArcaneService {
      */
     @Override
     @CharacterRequired
-    public List<Arcane> getArcaneList() {
+    public List<ArcaneListVO> getArcaneList() {
         Character character = (Character) session.getAttribute("currentCharacter");
 
         List<Arcane> arcaneList = arcaneRepository.findAllByCharacterIdIs(character.getId());
+
+        DateTime sevenDaysAgo = DateUtil.offsetDay(DateUtil.endOfDay(new Date()), -7);
         Specification<ArcaneAttainRecord> specification = ((root, query, criteriaBuilder) -> {
-            Date timePass = DateUtil.offsetDay(DateTime.now(), -7);
             criteriaBuilder.equal(root.get("characterId"), character.getId());
             Path<Object> noteDate = root.get("noteDate");
-            return criteriaBuilder.greaterThanOrEqualTo(noteDate.as(Date.class), timePass);
+            return criteriaBuilder.greaterThanOrEqualTo(noteDate.as(Date.class), sevenDaysAgo);
         });
 
-        List<ArcaneAttainRecord> all = recordRepository.findAll(specification);
-        log.info("数据{}", JSONUtil.toJsonStr(all));
-        return arcaneList;
+        List<ArcaneAttainRecord> recordList = recordRepository.findAll(specification);
+
+
+        Map<ArcaneType, List<ArcaneAttainRecord>> groupByType = recordList.stream().collect(Collectors.groupingBy(e -> e.getArcaneType()));
+
+        Map<ArcaneType, ArcaneListVO> resultMap = arcaneList.stream()
+                .filter(e -> character.getLevel() >= e.getArcaneType().getMinLevel())
+                .map(ArcaneListVO::new)
+                .collect(Collectors.toMap(ArcaneListVO::getArcaneType, e -> e));
+
+
+        DateTime threeDaysAgo = DateUtil.offsetDay(DateUtil.endOfDay(new Date()), -3);
+
+        for (ArcaneType type : resultMap.keySet()) {
+            List<ArcaneAttainRecord> records = groupByType.get(type);
+            ArcaneListVO vo = resultMap.get(type);
+
+            Iterator<String> dateItr = Stream.iterate(sevenDaysAgo, d -> d.offsetNew(DateField.DAY_OF_YEAR, 1))
+                    .map(e -> DateUtil.format(e, "yyyy-MM-dd"))
+                    .limit(7L).iterator();
+            AttainChartDataVO chartData = vo.getAttainChartData();
+            if (records == null) {
+                dateItr.forEachRemaining(e -> chartData.add(e, 0));
+                continue;
+            }
+
+            int attainLast7 = records.stream().mapToInt(ArcaneAttainRecord::getAttainCount).sum();
+            int attainLast3 = records.stream().filter(e -> threeDaysAgo.isBefore(e.getNoteDate())).mapToInt(ArcaneAttainRecord::getAttainCount).sum();
+
+
+            double attainAvgLast7 = (double) attainLast7 / 7;
+            double attainAvgLast3 = (double) attainLast3 / 3;
+
+
+            int countNeedToNextLevel = vo.getCountToNextLevel() - vo.getCurrentCount();
+            int countNeedToMaxLevel = vo.getCountToMaxLevel() - vo.getTotalCount();
+
+            vo.setDayCountToNextLevelSevenDay(countNeedToNextLevel / attainAvgLast7);
+            vo.setDayCountToMaxLevelSevenDay(countNeedToMaxLevel / attainAvgLast7);
+            vo.setDayCountToNextLevelThreeDay(countNeedToNextLevel / attainAvgLast3);
+            vo.setDayCountToMaxLevelThreeDay(countNeedToMaxLevel / attainAvgLast3);
+
+            vo.setDove7(attainLast7 == 0);
+            vo.setDove3(attainLast3 == 0);
+
+
+            Map<String, Integer> dateMap = records.stream().collect(Collectors.toMap(e -> DateUtil.format(e.getNoteDate(), "yyyy-MM-dd")
+                    , ArcaneAttainRecord::getAttainCount));
+
+            dateItr.forEachRemaining(d -> chartData.add(d, dateMap.getOrDefault(d, 0)));
+        }
+
+        return resultMap.values().stream().sorted(Comparator.comparingInt(e -> e.getArcaneType().getOrdinal())).collect(Collectors.toList());
     }
+
 }

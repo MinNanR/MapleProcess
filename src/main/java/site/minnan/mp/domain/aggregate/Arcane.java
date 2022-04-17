@@ -72,7 +72,7 @@ public class Arcane {
     /**
      * 岛球升级所需数量需求表
      */
-    private static final Map<Integer, Integer> needMap;
+    public static final Map<Integer, Integer> needMap;
 
     static {
         needMap = new HashMap<>();

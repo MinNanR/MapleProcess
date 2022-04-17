@@ -140,6 +140,7 @@ public class CharacterServiceImpl implements CharacterService {
     }
 
 
+    @Override
     public JSONObject queryCharacterInfo(String characterName){
         return characterUtils.queryCharacterInfo(characterName);
     }

@@ -1,6 +1,8 @@
 package site.minnan.mp.domain.vo;
 
 import lombok.Data;
+import site.minnan.mp.domain.aggregate.Arcane;
+import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 
 /**
  * 岛球列表显示参数
@@ -11,6 +13,11 @@ import lombok.Data;
 public class ArcaneListVO {
 
     private Integer id;
+
+    /**
+     * 岛球类型
+     */
+    private ArcaneType arcaneType;
 
     /**
      * 当前等级
@@ -57,4 +64,31 @@ public class ArcaneListVO {
      */
     private Double dayCountToMaxLevelSevenDay;
 
+    /**
+     * 过去三天是不是鸽了
+     */
+    private boolean isDove3;
+
+    /**
+     * 过去七天是不是鸽了
+     */
+    private boolean isDove7;
+
+    /**
+     * 获取记录表格
+     */
+    private AttainChartDataVO attainChartData;
+
+    public ArcaneListVO(Arcane arcane){
+        this.id = arcane.getId();
+        this.arcaneType = arcane.getArcaneType();
+        this.currentLevel = arcane.getLevel();
+        this.currentCount = arcane.getCurrentCount();
+        this.totalCount = arcane.getTotalCount();
+        this.countToMaxLevel = Arcane.needMap.values().stream().mapToInt(e -> e).sum();
+        this.countToNextLevel = Arcane.needMap.get(this.currentLevel);
+        this.isDove3 = true;
+        this.isDove7 = true;
+        this.attainChartData = new AttainChartDataVO(arcaneType);
+    }
 }

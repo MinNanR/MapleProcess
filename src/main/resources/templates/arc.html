@@ -49,15 +49,15 @@
             <th:block th:if="!${#lists.isEmpty(arcaneList)}">
                 <div>
                     <button class="layui-btn layui-btn-sm" id="addBtn">
-                        <i class="layui-icon">&#xe654;</i>
+                        <i class="layui-icon">&#xe654;</i>记录今日岛球
                     </button>
                 </div>
                 <table class="layui-table">
                     <colgroup>
                         <col width="50">
-                        <col width="200">
-                        <col width="200">
-                        <col width="200">
+                        <col width="150">
+                        <col width="100">
+                        <col width="180">
                         <col width="200">
                         <col width="200">
                         <col width="200">
@@ -79,26 +79,23 @@
                     </thead>
                     <tbody>
                     <tr th:each="arcane, itr : ${arcaneList}">
-                        <td th:text="${itr.index}"></td>
+                        <td th:text="${itr.index + 1}"></td>
                         <td th:text="${arcane.arcaneType.label()}"></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>消亡旅途</td>
-                        <td>1</td>
-                        <td>1/12</td>
-                        <td>1/133</td>
-                        <td>133</td>
-                        <td>133</td>
-                        <td>133</td>
-                        <td>133</td>
+                        <td th:text="${arcane.currentLevel}"></td>
+                        <td th:text="${arcane.currentCount} + '/' + ${arcane.countToNextLevel}"></td>
+                        <td th:text="${arcane.totalCount} + '/' + ${arcane.countToMaxLevel}"></td>
+
+                        <td th:if="!${arcane.dove3}" th:text="${arcane.dayCountToNextLevelThreeDay}"></td>
+                        <td th:if="${arcane.dove3}" >这辈子都没可能升级了</td>
+
+                        <td th:if="!${arcane.dove7}" th:text="${arcane.dayCountToNextLevelSevenDay}"></td>
+                        <td th:if="${arcane.dove7}">这辈子被子都没可能升级了</td>
+
+                        <td th:if="!${arcane.dove3}" th:text="${arcane.dayCountToMaxLevelThreeDay}"></td>
+                        <td th:if="${arcane.dove3}">这辈子被子都没可能升满了</td>
+
+                        <td th:if="!${arcane.dove7}" th:text="${arcane.dayCountToMaxLevelSevenDay}"></td>
+                        <td th:if="${arcane.dove7}">这辈子被子都没可能升满了</td>
                     </tr>
                     </tbody>
                 </table>
@@ -220,7 +217,9 @@
 
     })
 
-
 </script>
-
+<script th:inline="javascript">
+    var data = [[${chartDataList}]]
+    console.log(data)
+</script>
 </html>
