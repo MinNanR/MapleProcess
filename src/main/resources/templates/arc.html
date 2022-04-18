@@ -9,8 +9,9 @@
     <script src="/layui/layui.js"></script>
     <script src="/js/head.js"></script>
     <script src="/js/request.js"></script>
+    <script src="/js/echarts.js"></script>
 </head>
-<body>
+<body style="background-color: rgb(245,245,245)">
 <div class="layui-layout layui-layout-admin">
     <div th:replace="fragments/head::header"></div>
     <div class="layui-body">
@@ -103,6 +104,15 @@
                     </tr>
                     </tbody>
                 </table>
+                <div style="margin-top: 30px;">
+                    <div class="layui-card" th:each="item : ${chartDataList}"
+                         style="width: 31%;display: inline-block;margin: 10px;">
+                        <div class="layui-card-header" th:text="${item.arcaneType.label()}"></div>
+                        <div class="layui-card-body">
+                            <div th:id="'chart_' + ${item.arcaneType.name()}" style="width: 500px;height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
             </th:block>
         </div>
         <div style="padding: 15px" th:if="${session.currentCharacter} == null">
@@ -119,7 +129,7 @@
                 <div class="layui-input-inline">
                     <input
                             th:value="${#dates.format(#dates.createTodayForTimeZone(T(java.util.TimeZone).getTimeZone('GMT')), 'yyyy-MM-dd')}"
-                           type="text" id="date" name="noteDate" class="layui-input" autocomplete="off">
+                            type="text" id="date" name="noteDate" class="layui-input" autocomplete="off">
                 </div>
             </div>
             <div class="layui-form-item" th:each="arcType : ${currentList}">
@@ -226,6 +236,27 @@
 </script>
 <script th:inline="javascript">
     var data = [[${chartDataList}]]
-    console.log(data)
+    for(var item of data){
+        console.log(item.arcaneType)
+        let myCharts = echarts.init(document.getElementById("chart_" + item.arcaneType))
+
+        var option = {
+            xAxis: {
+                type: 'category',
+                data: item.dateList
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    data: item.attainCountList,
+                    type: 'bar'
+                }
+            ]
+        }
+
+        myCharts.setOption(option)
+    }
 </script>
 </html>

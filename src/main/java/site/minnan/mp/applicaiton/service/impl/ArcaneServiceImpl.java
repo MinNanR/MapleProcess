@@ -152,7 +152,7 @@ public class ArcaneServiceImpl implements ArcaneService {
 
         List<Arcane> arcaneList = arcaneRepository.findAllByCharacterIdIs(character.getId());
 
-        DateTime sevenDaysAgo = DateUtil.offsetDay(DateUtil.endOfDay(new Date()), -7);
+        DateTime sevenDaysAgo = DateUtil.offsetDay(DateUtil.beginOfDay(new Date()), -6);
         Specification<ArcaneAttainRecord> specification = ((root, query, criteriaBuilder) -> {
             criteriaBuilder.equal(root.get("characterId"), character.getId());
             Path<Object> noteDate = root.get("noteDate");
@@ -170,7 +170,7 @@ public class ArcaneServiceImpl implements ArcaneService {
                 .collect(Collectors.toMap(ArcaneListVO::getArcaneType, e -> e));
 
 
-        DateTime threeDaysAgo = DateUtil.offsetDay(DateUtil.endOfDay(new Date()), -3);
+        DateTime threeDaysAgo = DateUtil.offsetDay(DateUtil.beginOfDay(new Date()), -3);
 
         for (ArcaneType type : resultMap.keySet()) {
             List<ArcaneAttainRecord> records = groupByType.get(type);
@@ -186,7 +186,8 @@ public class ArcaneServiceImpl implements ArcaneService {
             }
 
             int attainLast7 = records.stream().mapToInt(ArcaneAttainRecord::getAttainCount).sum();
-            int attainLast3 = records.stream().filter(e -> threeDaysAgo.isBefore(e.getNoteDate())).mapToInt(ArcaneAttainRecord::getAttainCount).sum();
+            int attainLast3 =
+                    records.stream().filter(e -> threeDaysAgo.isBeforeOrEquals(e.getNoteDate())).mapToInt(ArcaneAttainRecord::getAttainCount).sum();
 
 
             double attainAvgLast7 = (double) attainLast7 / 7;
