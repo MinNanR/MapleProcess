@@ -91,7 +91,6 @@ public class ArcaneServiceImpl implements ArcaneService {
                 record.setAttainCount(attainCount);
                 arcane.updateLevelInfo(record.getStartTotalCount(), attainCount);
             } else {
-                arcane.updateLevelInfo(arcane.getTotalCount(), attainCount);
                 ArcaneAttainRecord newRecord = ArcaneAttainRecord.builder()
                         .characterId(characterId)
                         .arcaneType(attainItem.getArcaneType())
@@ -100,6 +99,7 @@ public class ArcaneServiceImpl implements ArcaneService {
                         .noteDate(noteDate)
                         .createTime(Timestamp.from(Instant.now()))
                         .build();
+                arcane.updateLevelInfo(arcane.getTotalCount(), attainCount);
                 recordList.add(newRecord);
             }
         }
@@ -211,7 +211,9 @@ public class ArcaneServiceImpl implements ArcaneService {
             dateItr.forEachRemaining(d -> chartData.add(d, dateMap.getOrDefault(d, 0)));
         }
 
-        return resultMap.values().stream().sorted(Comparator.comparingInt(e -> e.getArcaneType().getOrdinal())).collect(Collectors.toList());
+        return resultMap.values().stream()
+                .sorted(Comparator.comparingInt(e -> e.getArcaneType().getOrdinal()))
+                .collect(Collectors.toList());
     }
 
 }

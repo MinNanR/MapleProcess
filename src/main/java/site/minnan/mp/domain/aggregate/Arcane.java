@@ -76,16 +76,17 @@ public class Arcane {
 
     static {
         needMap = new HashMap<>();
+        needMap.put(0, 0);
         for (int i = 1; i <= 20; i++) {
             needMap.put(i, i * i + 11);
         }
     }
 
-    public int calculateStartCurrentCount(int startTotalCount) {
-        int i = 1;
-        while (startTotalCount > (needMap.get(i))) {
-            startTotalCount -= needMap.get(i);
-            i++;
+    private int calculateStartCurrentCount(int startTotalCount) {
+        level = 1;
+        while (startTotalCount > (needMap.get(level))) {
+            startTotalCount -= needMap.get(level);
+            level++;
         }
         return startTotalCount;
     }
@@ -101,7 +102,7 @@ public class Arcane {
         this.level = level + newCurrentCount / countNeed;
     }
 
-    public void calculateTotalCount(){
+    public void calculateTotalCount() {
         int totalCount = Stream.iterate(1, i -> i + 1).mapToInt(needMap::get).limit(level).sum();
         this.totalCount = totalCount + this.currentCount;
     }

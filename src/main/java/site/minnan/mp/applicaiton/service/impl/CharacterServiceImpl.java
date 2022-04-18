@@ -1,29 +1,25 @@
 package site.minnan.mp.applicaiton.service.impl;
 
-import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
-import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import site.minnan.mp.applicaiton.service.CharacterService;
 import site.minnan.mp.domain.aggregate.Character;
 import site.minnan.mp.domain.entity.CharacterInfo;
 import site.minnan.mp.domain.repository.CharacterRepository;
+import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 import site.minnan.mp.infrastructure.exception.EntityAlreadyExistException;
-import site.minnan.mp.infrastructure.exception.EntityNotExistException;
 import site.minnan.mp.infrastructure.utils.CharacterUtils;
-import site.minnan.mp.userinterface.dto.character.AddCharacterDTO;
 import site.minnan.mp.userinterface.dto.DetailsQueryDTO;
+import site.minnan.mp.userinterface.dto.character.AddCharacterDTO;
 import site.minnan.mp.userinterface.dto.character.QueryCharacterInfoDTO;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,6 +57,7 @@ public class CharacterServiceImpl implements CharacterService {
      * @return
      */
     @Override
+    @Cacheable(cacheNames = "currentCharacter")
     public Character getCurrentCharacter() {
         Optional<Character> opt = characterRepository.findOne(Example.of(Character.ofCurrent()));
         return opt.orElseGet(Character::new);
@@ -108,6 +105,7 @@ public class CharacterServiceImpl implements CharacterService {
      * @param dto
      */
     @Override
+    @CacheEvict(value = "currentCharacter", allEntries = true)
     public void switchCharacter(DetailsQueryDTO dto) {
         List<Character> allCharacter = characterRepository.findAll();
         allCharacter.forEach(e -> e.setCurrent(0));

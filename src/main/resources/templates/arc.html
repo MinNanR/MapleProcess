@@ -85,16 +85,20 @@
                         <td th:text="${arcane.currentCount} + '/' + ${arcane.countToNextLevel}"></td>
                         <td th:text="${arcane.totalCount} + '/' + ${arcane.countToMaxLevel}"></td>
 
-                        <td th:if="!${arcane.dove3}" th:text="${arcane.dayCountToNextLevelThreeDay}"></td>
-                        <td th:if="${arcane.dove3}" >这辈子都没可能升级了</td>
+                        <td th:if="!${arcane.dove3}"
+                            th:text="${#numbers.formatDecimal(arcane.dayCountToNextLevelThreeDay, 1, 2)}"></td>
+                        <td th:if="${arcane.dove3}">这辈子都没可能升级了</td>
 
-                        <td th:if="!${arcane.dove7}" th:text="${arcane.dayCountToNextLevelSevenDay}"></td>
+                        <td th:if="!${arcane.dove7}"
+                            th:text="${#numbers.formatDecimal(arcane.dayCountToNextLevelSevenDay, 1, 2)}"></td>
                         <td th:if="${arcane.dove7}">这辈子被子都没可能升级了</td>
 
-                        <td th:if="!${arcane.dove3}" th:text="${arcane.dayCountToMaxLevelThreeDay}"></td>
+                        <td th:if="!${arcane.dove3}"
+                            th:text="${#numbers.formatDecimal(arcane.dayCountToMaxLevelThreeDay, 1, 2)}"></td>
                         <td th:if="${arcane.dove3}">这辈子被子都没可能升满了</td>
 
-                        <td th:if="!${arcane.dove7}" th:text="${arcane.dayCountToMaxLevelSevenDay}"></td>
+                        <td th:if="!${arcane.dove7}"
+                            th:text="${#numbers.formatDecimal(arcane.dayCountToMaxLevelSevenDay, 1, 2)}"></td>
                         <td th:if="${arcane.dove7}">这辈子被子都没可能升满了</td>
                     </tr>
                     </tbody>
@@ -113,7 +117,9 @@
             <div class="layui-form-item">
                 <label class="layui-form-label" style="width: 100px">日期</label>
                 <div class="layui-input-inline">
-                    <input type="text" id="date" name="noteDate" class="layui-input" autocomplete="off">
+                    <input
+                            th:value="${#dates.format(#dates.createTodayForTimeZone(T(java.util.TimeZone).getTimeZone('GMT')), 'yyyy-MM-dd')}"
+                           type="text" id="date" name="noteDate" class="layui-input" autocomplete="off">
                 </div>
             </div>
             <div class="layui-form-item" th:each="arcType : ${currentList}">
