@@ -5,8 +5,8 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import site.minnan.mp.domain.entity.CharacterInfo;
 import site.minnan.mp.infrastructure.exception.EntityNotExistException;
 
 import java.nio.charset.StandardCharsets;
@@ -24,7 +24,7 @@ public class CharacterUtils {
     private static final String QUERY_BY_NAME_BASE_URL = "https://api.maplestory.gg/v2/public/character/gms/";
 
     @Cacheable(cacheNames = "characterInfo", key = "#characterName", cacheManager = "cache")
-    public JSONObject queryCharacterInfo(String characterName) {
+    public CharacterInfo queryCharacterInfo(String characterName) {
 
         String queryUrl = QUERY_BY_NAME_BASE_URL + characterName;
 
@@ -43,6 +43,6 @@ public class CharacterUtils {
             throw new EntityNotExistException("角色不存在");
         }
 
-        return characterData;
+        return new CharacterInfo(characterData);
     }
 }

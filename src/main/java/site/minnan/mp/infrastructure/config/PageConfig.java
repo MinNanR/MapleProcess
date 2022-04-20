@@ -1,6 +1,7 @@
 package site.minnan.mp.infrastructure.config;
 
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.util.RuntimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -9,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import site.minnan.mp.domain.entity.Menu;
 import site.minnan.mp.infrastructure.interceptor.CharacterInterceptor;
 
-import java.util.ArrayList;
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -37,6 +38,7 @@ public class PageConfig implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/page/index").setViewName("index");
         registry.addViewController("/page/addCharacter").setViewName("addCharacter");
+        registry.addViewController("/page/exp").setViewName("exp");
     }
 
     /**
@@ -57,6 +59,7 @@ public class PageConfig implements WebMvcConfigurer {
     static {
         menuList = ListUtil.toList(
                 Menu.of("/page/index", "主页", "index"),
+                Menu.of("/page/exp", "经验", "exp"),
                 Menu.of("/page/arc", "岛球", "arc")
         );
 

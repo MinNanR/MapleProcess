@@ -15,6 +15,7 @@ import site.minnan.mp.applicaiton.service.CharacterService;
 import site.minnan.mp.domain.aggregate.Arcane;
 import site.minnan.mp.domain.aggregate.ArcaneAttainRecord;
 import site.minnan.mp.domain.aggregate.Character;
+import site.minnan.mp.domain.entity.CharacterInfo;
 import site.minnan.mp.domain.repository.ArcaneAttainRecordRepository;
 import site.minnan.mp.domain.repository.ArcaneRepository;
 import site.minnan.mp.domain.vo.ArcaneListVO;
@@ -115,8 +116,8 @@ public class ArcaneServiceImpl implements ArcaneService {
     @CharacterRequired
     public void addArcane(List<InitArcaneItem> list) {
         Character character = (Character) session.getAttribute("currentCharacter");
-        JSONObject characterInfo = characterService.queryCharacterInfo(character.getCharacterName());
-        Integer level = characterInfo.getInt("Level");
+        CharacterInfo characterInfo = characterService.queryCharacterInfo(character.getCharacterName());
+        Integer level = characterInfo.getLevel();
 
         list.stream()
                 .filter(e -> (e.getArcaneType().getMinLevel() > level) ||

@@ -93,9 +93,7 @@ public class CharacterServiceImpl implements CharacterService {
             throw new EntityAlreadyExistException("角色已存在");
         }
 
-        JSONObject characterData = queryCharacterInfo(characterName);
-
-        return new CharacterInfo(characterData);
+        return queryCharacterInfo(characterName);
     }
 
 
@@ -126,8 +124,8 @@ public class CharacterServiceImpl implements CharacterService {
         Optional<Character> currentCharacter = characterRepository.findOne(Example.of(Character.ofCurrent()));
         if (currentCharacter.isPresent()) {
             Character character = currentCharacter.get();
-            JSONObject characterData = queryCharacterInfo(character.getCharacterName());
-            Integer currentLevel = characterData.getInt("Level");
+            CharacterInfo characterInfo = queryCharacterInfo(character.getCharacterName());
+            Integer currentLevel = characterInfo.getLevel();
             return EnumSet.allOf(ArcaneType.class).stream()
                     .filter(e -> currentLevel >= e.getMinLevel())
                     .sorted(Comparator.comparingInt(ArcaneType::getOrdinal))
@@ -139,7 +137,7 @@ public class CharacterServiceImpl implements CharacterService {
 
 
     @Override
-    public JSONObject queryCharacterInfo(String characterName){
+    public CharacterInfo queryCharacterInfo(String characterName){
         return characterUtils.queryCharacterInfo(characterName);
     }
 }

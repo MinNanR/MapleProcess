@@ -10,11 +10,13 @@ import site.minnan.mp.applicaiton.service.ArcaneService;
 import site.minnan.mp.applicaiton.service.CharacterService;
 import site.minnan.mp.domain.aggregate.Arcane;
 import site.minnan.mp.domain.aggregate.Character;
+import site.minnan.mp.domain.entity.CharacterInfo;
 import site.minnan.mp.domain.vo.ArcaneListVO;
 import site.minnan.mp.domain.vo.AttainChartDataVO;
 import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 import site.minnan.mp.infrastructure.exception.EntityNotExistException;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,6 +63,19 @@ public class PageController {
 
 
         mv.setViewName("arc");
+        return mv;
+    }
+
+    @RequestMapping("/exp")
+    public ModelAndView exp(HttpSession session){
+        Character character = (Character) session.getAttribute("currentCharacter");
+        CharacterInfo characterInfo = characterService.queryCharacterInfo(character.getCharacterName());
+
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("exp");
+        mv.addObject("characterInfo", characterInfo);
+        mv.addObject("graphDataList", characterInfo.getGraphDataList());
+
         return mv;
     }
 }

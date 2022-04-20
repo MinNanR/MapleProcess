@@ -58,5 +58,5 @@ public interface CharacterService {
      * @param characterName
      * @return
      */
-    JSONObject queryCharacterInfo(String characterName);
+    CharacterInfo queryCharacterInfo(String characterName);
 }
