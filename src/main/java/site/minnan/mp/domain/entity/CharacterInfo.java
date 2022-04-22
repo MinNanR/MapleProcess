@@ -60,6 +60,8 @@ public class CharacterInfo {
      */
     private BigDecimal expPercent;
 
+
+
     /**
      * 等级总排名
      */

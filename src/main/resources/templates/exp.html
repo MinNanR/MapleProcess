@@ -8,22 +8,165 @@
     <script type="text/javascript" src="/js/request.js"></script>
     <link rel="stylesheet" href="/layui/css/layui.css">
 </head>
-<body>
+<body style="background-color: rgb(245,245,245)">
 <div class="layui-layout layui-layout-admin">
     <div th:replace="fragments/head::header"></div>
     <div class="layui-body">
         <!-- 内容主体区域 -->
-        <div>
-            <div >
-                <div>
-                    <img  style="width: 100%;clip: rect(100px, 50px, 0px, 0px)" src="/img/background.png" alt="">
+        <div class="jss46">
+            <div class="jss47"></div>
+            <div class="jss48">
+                <div class="jss49">
+                    <div class="jss50">
+                        <div class="jss76">
+                            <div class="jss77"
+                                 th:style="'background-image: url(\'/img/' + ${characterInfo.job} + '.png'"></div>
+                            <div class="jss78"><img class="jss79" alt="MinnanFP character avatar"
+                                                    th:src="${characterInfo.characterImageUrl}">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
+                <div class="jss51">
+                    <div class="jss52">
+                        <h2 class="MuiTypography-root MuiTypography-h2 css-hw35l3" th:text="${characterInfo.characterName}"></h2>
+                        <h6
+                            class="MuiTypography-root MuiTypography-subtitle1 css-3z9mg0">Level
+                        <span th:text="${characterInfo.level}"></span>
+                        (
+                        <span th:text="${characterInfo.expPercent} + '%'"></span>
+                        ) |
+                        <span th:text="${characterInfo.job}"></span>
+                        |
+                        <span th:text="${characterInfo.server}"></span>
+                            | MapleStory Global</h6>
+                        <hr class="MuiDivider-root MuiDivider-fullWidth css-1ns1qca">
+                        <h6 class="MuiTypography-root MuiTypography-subtitle1 css-eynran">Global Rank <span
+                                th:text="${characterInfo.globalRanking}"></span> |
+                            <span th:text="${characterInfo.job}"></span> Rank <span
+                                    th:text="${characterInfo.serverRank}"></span>
+                            | Reboot (NA) Rank <span th:text="${characterInfo.serverClassRanking}"></span> </h6></div>
+                </div>
             </div>
         </div>
+
     </div>
 </div>
 </body>
 <script src="/layui/layui.js"></script>
 <script src="/js/head.js"></script>
+<style>
+    .jss46 {
+        width: 100%;
+        position: relative;
+        max-height: 50vh;
+        min-height: 50vh;
+        background-color: #666;
+    }
+
+    .jss47 {
+        filter: grayscale(80%) opacity(60%) contrast(80%) brightness(80%);
+        position: absolute;
+        max-width: 100%;
+        min-width: 100%;
+        max-height: 100%;
+        min-height: 100%;
+        background-size: cover;
+        background-image: url("/img/background.png");
+        background-position: bottom;
+    }
+
+    jss47::before, jss47::after {
+        box-sizing: inherit;
+    }
+
+    .jss48 {
+        display: flex;
+        position: absolute;
+        max-width: 100%;
+        min-width: 100%;
+        max-height: 100%;
+        min-height: 100%;
+    }
+
+    .jss49 {
+        width: 40%;
+        z-index: 10;
+        position: relative;
+        text-align: right;
+    }
+
+    .jss50 {
+        right: -25%;
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .jss76 {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .jss77 {
+        top: 0;
+        left: 0;
+        width: 100%;
+        filter: grayscale(80%) contrast(70%) brightness(40%);
+        height: 100%;
+        opacity: 0.6;
+        position: absolute;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    .jss78 {
+        top: calc(50% - 72px);
+        left: calc(50% - 72px);
+        position: absolute;
+    }
+
+    .jss51 {
+        color: #FFF;
+        width: 60%;
+        display: flex;
+        z-index: 20;
+        text-align: left;
+        align-items: center;
+    }
+
+    .jss52 {
+        display: inline-block;
+        text-shadow: 1px 1px 5px #000;
+    }
+
+    .css-hw35l3 {
+        margin: 0px;
+        font-weight: 300;
+        line-height: 1.2;
+        letter-spacing: -0.00833em;
+        font-size: 5rem;
+    }
+
+    .css-3z9mg0 {
+        margin: 0px;
+        font-family: Montserrat, Verdana, sans-serif;
+        font-weight: 400;
+        line-height: 1.75;
+        letter-spacing: 0.00938em;
+        font-size: 1.5rem;
+    }
+
+    .css-eynran {
+        margin: 0px;
+        font-family: Montserrat, Verdana, sans-serif;
+        font-weight: 400;
+        line-height: 1.75;
+        letter-spacing: 0.00938em;
+        font-size: 1rem;
+    }
+
+</style>
 </html>
