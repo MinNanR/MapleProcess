@@ -7,6 +7,9 @@
     <script type="text/javascript" src="/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="/js/request.js"></script>
     <link rel="stylesheet" href="/layui/css/layui.css">
+    <script src="/layui/layui.js"></script>
+    <script src="/js/head.js"></script>
+    <script src="/js/echarts.js"></script>
 </head>
 <body style="background-color: rgb(245,245,245)">
 <div class="layui-layout layui-layout-admin">
@@ -29,32 +32,237 @@
                 </div>
                 <div class="jss51">
                     <div class="jss52">
-                        <h2 class="MuiTypography-root MuiTypography-h2 css-hw35l3" th:text="${characterInfo.characterName}"></h2>
+                        <h2 class="MuiTypography-root MuiTypography-h2 css-hw35l3"
+                            th:text="${characterInfo.characterName}">
+                        </h2>
                         <h6
-                            class="MuiTypography-root MuiTypography-subtitle1 css-3z9mg0">Level
-                        <span th:text="${characterInfo.level}"></span>
-                        (
-                        <span th:text="${characterInfo.expPercent} + '%'"></span>
-                        ) |
-                        <span th:text="${characterInfo.job}"></span>
-                        |
-                        <span th:text="${characterInfo.server}"></span>
-                            | MapleStory Global</h6>
+                                class="MuiTypography-root MuiTypography-subtitle1 css-3z9mg0">Level
+                            <span th:text="${characterInfo.level}"></span>
+                            (
+                            <span th:text="${characterInfo.expPercent} + '%'"></span>
+                            ) |
+                            <span th:text="${characterInfo.job}"></span>
+                            |
+                            <span th:text="${characterInfo.server}"></span>
+                            | MapleStory Global
+                        </h6>
                         <hr class="MuiDivider-root MuiDivider-fullWidth css-1ns1qca">
                         <h6 class="MuiTypography-root MuiTypography-subtitle1 css-eynran">Global Rank <span
                                 th:text="${characterInfo.globalRanking}"></span> |
                             <span th:text="${characterInfo.job}"></span> Rank <span
                                     th:text="${characterInfo.serverRank}"></span>
-                            | Reboot (NA) Rank <span th:text="${characterInfo.serverClassRanking}"></span> </h6></div>
+                            | Reboot (NA) Rank <span th:text="${characterInfo.serverClassRanking}"></span>
+                        </h6>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <div style="display: flex">
+            <div class="layui-card" style="width: 35%;margin: 30px 30px;">
+                <div class="layui-card-header" style="background-color: rgb(238, 238, 238)">联盟</div>
+                <th:block th:if="${characterInfo.legionRank} == 0">
+                    <div class="layui-card-body" style="text-align: center">
+                        暂无联盟信息
+                    </div>
+                </th:block>
+                <th:block th:if="${characterInfo.legionRank} != 0">
+                    <div class="layui-card-body" style="text-align: center">
+                        <div class="layui-row">
+                            <h2>联盟排名</h2>
+                        </div>
+                        <div class="layui-row">
+                            <p style="font-size: 1.3rem;" th:text="${characterInfo.legionRank}"></p>
+                        </div>
+                        <div class="layui-row">
+                            <h2>联盟等级</h2>
+                        </div>
+                        <div class="layui-row">
+                            <p style="font-size: 1.3rem;" th:text="${characterInfo.legionLevel}"></p>
+                        </div>
+                        <div class="layui-row">
+                            <h2>联盟战力</h2>
+                        </div>
+                        <div class="layui-row">
+                            <p style="font-size: 1.3rem">
+                                <span th:text="${#numbers.formatDecimal(characterInfo.legionPower / 1000000, 0, 0)}"></span>
+                                M(每日
+                                <span th:text="${characterInfo.legionCoinsPerDay}"></span>
+                                币)
+                            </p>
+                        </div>
+                    </div>
+
+                </th:block>
+
+            </div>
+
+            <div class="layui-card" style="width: 40%;margin: 30px 30px;font-size: 1.4rem;">
+                <div class="layui-card-header" style="background-color: rgb(238, 238, 238)">等级</div>
+                <div class="layui-card-body" style="text-align: center">
+                    <div class="layui-row">
+                        <div th:if="${characterInfo.dayToNextStageOne} != null">
+                            按照过去1天肝度，还有
+                            <span th:text="${characterInfo.dayToNextStageOne}"></span>
+                            天到达
+                            <span th:text="${characterInfo.nextStageLevel}"></span>
+                            级
+                        </div>
+                        <div th:if="${characterInfo.dayToNextStageOne} == null">
+                            按照过去1天肝度，这辈子肝不到
+                            <span th:text="${characterInfo.nextStageLevel}"></span>
+                            了
+                        </div>
+                    </div>
+                    <div class="layui-row">
+                        <div th:if="${characterInfo.dayToNextStageFourteen} != null">
+                            按照过去14天肝度，还有
+                            <span th:text="${characterInfo.dayToNextStageFourteen}"></span>
+                            天到达
+                            <span th:text="${characterInfo.nextStageLevel}"></span>
+                            级
+                        </div>
+                        <div th:if="${characterInfo.dayToNextStageFourteen} == null">
+                            按照过去14天肝度，这辈子肝不到
+                            <span th:text="${characterInfo.nextStageLevel}"></span>
+                            了
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+            <div class="layui-card" style="margin: 30px 30px;">
+                <div class="layui-card-header" style="background-color: rgb(238, 238, 238)">每日经验</div>
+                <div class="layui-card-body">
+                    <div id="exp_chart" style="width: 99%;height: 500px;"></div>
+                </div>
+            </div>
+
+            <div class="layui-card" style="margin: 30px 30px;">
+                <div class="layui-card-header" style="background-color: rgb(238, 238, 238)">经验走势</div>
+                <div class="layui-card-body">
+                    <div id="exp_overall_chart" style="width: 99%;height: 500px;"></div>
+                </div>
+            </div>
     </div>
 </div>
 </body>
-<script src="/layui/layui.js"></script>
-<script src="/js/head.js"></script>
+<script th:inline="javascript">
+    let expCharts = echarts.init(document.getElementById('exp_chart'))
+    var optionExp = {
+        tooltip: {
+            trigger: "axis",
+            axisPointer: {
+                animation: false,
+                type: "cross",
+                lineStyle: {
+                    color: "#376df4",
+                    width: 2,
+                    opacity: 1,
+                },
+            }
+        },
+        xAxis: {
+            type: "category",
+            data: [[${characterInfo.dateList()}]]
+        },
+        yAxis: {
+            type: 'value',
+            axisLine: {
+                show: true
+            },
+            name: "经验获取量(B)",
+            nameRotate: 90,
+            nameTextStyle: {
+                verticalAlign: 'top', // top名称显示在坐标轴外，bottom显示在坐标轴内部
+                align: 'left',
+                padding: [-80, 60, 5, -100],
+                fontSize: 20
+            },
+        },
+        series: [
+            {
+                data: [[${characterInfo.expPerDay()}]],
+                type: "bar",
+                name: "经验获取量"
+            }
+        ]
+    }
+    expCharts.setOption(optionExp)
+
+    let expOverallCharts = echarts.init(document.getElementById('exp_overall_chart'))
+    var optionExpOverall = {
+        tooltip: {
+            trigger: "axis",
+            axisPointer: {
+                animation: false,
+                type: "cross",
+                lineStyle: {
+                    color: "#376df4",
+                    width: 2,
+                    opacity: 1,
+                },
+            },
+        },
+        xAxis: {
+            type: "category",
+            data: [[${characterInfo.dateList()}]]
+        },
+        yAxis: [{
+            name: "经验总量(B)",
+            nameRotate: 90,
+            nameTextStyle: {
+                verticalAlign: 'top', // top名称显示在坐标轴外，bottom显示在坐标轴内部
+                align: 'left',
+                padding: [-80, 60, 5, -100],
+                fontSize: 20
+            },
+            type: 'value',
+            axisLine: {
+                lineStyle: {
+                    color: '#8392A5'
+                },
+                show: true
+            },
+            splitLine: {show: false},
+        }, {
+            name: "等级",
+            type: 'value',
+            axisLine: {
+                lineStyle: {
+                    color: '#1F7EFF'
+                },
+                show: true
+            },
+            splitLine: {show: false},
+            max: function (value) {
+                return value.max + 5
+            },
+            min: function (value) {
+                return value.min - 5
+            }
+        }],
+        series: [
+            {
+                data: [[${characterInfo.overAllExp()}]],
+                type: "line",
+                yAxisIndex: 0,
+                name: "经验总量"
+            },
+            {
+                data: [[${characterInfo.levelLine()}]],
+                type: "line",
+                yAxisIndex: 1,
+                name: "等级"
+            }
+        ]
+    }
+    expOverallCharts.setOption(optionExpOverall)
+
+</script>
 <style>
     .jss46 {
         width: 100%;
@@ -128,6 +336,11 @@
         position: absolute;
     }
 
+    .jss79 {
+        width: 144px;
+        height: 144px;
+    }
+
     .jss51 {
         color: #FFF;
         width: 60%;
@@ -166,6 +379,14 @@
         line-height: 1.75;
         letter-spacing: 0.00938em;
         font-size: 1rem;
+    }
+
+    .layui-row {
+        margin-bottom: 5px;
+    }
+
+    .layui-card-header {
+        font-size: 1.2rem;
     }
 
 </style>

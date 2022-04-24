@@ -31,6 +31,11 @@ public class GraphData {
     private BigDecimal expToNextLevel;
 
     /**
+     * 经验总量
+     */
+    private BigDecimal totalOverallExp;
+
+    /**
      * 等级
      */
     private Integer level;
@@ -45,6 +50,7 @@ public class GraphData {
         expDifference = json.getBigDecimal("EXPDifference");
         expToNextLevel = json.getBigDecimal("EXPToNextLevel");
         level = json.getInt("Level");
+        totalOverallExp = json.getBigDecimal("TotalOverallEXP");
         date = json.getStr("DateLabel");
     }
 

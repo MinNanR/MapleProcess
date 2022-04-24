@@ -106,10 +106,12 @@
                 </table>
                 <div style="margin-top: 30px;">
                     <div class="layui-card" th:each="item : ${chartDataList}"
-                         style="width: 31%;display: inline-block;margin: 10px;">
-                        <div class="layui-card-header" th:text="${item.arcaneType.label()}"></div>
+                         style="width: 30%;display: inline-block;margin: 10px;">
+                        <div class="layui-card-header" th:text="${item.arcaneType.label()}"
+                             style="background-color: rgb(238, 238, 238)"></div>
                         <div class="layui-card-body">
-                            <div th:id="'chart_' + ${item.arcaneType.name()}" style="width: 500px;height: 300px;"></div>
+                            <div th:id="'chart_' + ${item.arcaneType.name()}" style="width: 100%;height: 300px;"></div>
+
                         </div>
                     </div>
                 </div>
@@ -236,7 +238,7 @@
 </script>
 <script th:inline="javascript">
     var data = [[${chartDataList}]]
-    for(var item of data){
+    for (var item of data) {
         console.log(item.arcaneType)
         let myCharts = echarts.init(document.getElementById("chart_" + item.arcaneType))
 

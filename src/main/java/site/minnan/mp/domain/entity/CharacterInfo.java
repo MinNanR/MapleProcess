@@ -2,6 +2,7 @@ package site.minnan.mp.domain.entity;
 
 import cn.hutool.json.JSONObject;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -61,7 +62,6 @@ public class CharacterInfo {
     private BigDecimal expPercent;
 
 
-
     /**
      * 等级总排名
      */
@@ -107,7 +107,28 @@ public class CharacterInfo {
      */
     private Integer serverRank;
 
-    List<GraphData> graphDataList;
+    /**
+     * 图标数据
+     */
+    private List<GraphData> graphDataList;
+
+    /**
+     * 下一阶段等级
+     */
+    @Setter
+    private Integer nextStageLevel;
+
+    /**
+     * 根据最近1天肝度到达下一阶段所需天数
+     */
+    @Setter
+    private BigDecimal dayToNextStageOne;
+
+    /**
+     * 根据最近14天肝度到达下一阶段所需天数
+     */
+    @Setter
+    private BigDecimal dayToNextStageFourteen;
 
     public CharacterInfo(JSONObject json) {
         this.characterName = json.getStr("Name");
@@ -135,4 +156,31 @@ public class CharacterInfo {
                 .map(GraphData::new)
                 .collect(Collectors.toList());
     }
+
+    public List<String> dateList() {
+        return this.graphDataList.stream()
+                .map(GraphData::getDate)
+                .collect(Collectors.toList());
+    }
+
+    public List<BigDecimal> expPerDay() {
+        BigDecimal oneBillion = new BigDecimal("1000000000");
+        return this.graphDataList.stream()
+                .map(GraphData::getExpDifference)
+                .map(e -> e.divide(oneBillion))
+                .collect(Collectors.toList());
+    }
+
+    public List<BigDecimal> overAllExp() {
+        BigDecimal oneBillion = new BigDecimal("1000000000");
+        return this.graphDataList.stream()
+                .map(GraphData::getTotalOverallExp)
+                .map(e -> e.divide(oneBillion))
+                .collect(Collectors.toList());
+    }
+
+    public List<Integer> levelLine() {
+        return this.graphDataList.stream().map(GraphData::getLevel).collect(Collectors.toList());
+    }
+
 }

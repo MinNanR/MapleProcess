@@ -12,14 +12,19 @@ import org.springframework.stereotype.Service;
 import site.minnan.mp.applicaiton.service.CharacterService;
 import site.minnan.mp.domain.aggregate.Character;
 import site.minnan.mp.domain.entity.CharacterInfo;
+import site.minnan.mp.domain.entity.GraphData;
 import site.minnan.mp.domain.repository.CharacterRepository;
 import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 import site.minnan.mp.infrastructure.exception.EntityAlreadyExistException;
 import site.minnan.mp.infrastructure.utils.CharacterUtils;
+import site.minnan.mp.infrastructure.utils.ExpUtils;
 import site.minnan.mp.userinterface.dto.DetailsQueryDTO;
 import site.minnan.mp.userinterface.dto.character.AddCharacterDTO;
 import site.minnan.mp.userinterface.dto.character.QueryCharacterInfoDTO;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,6 +47,9 @@ public class CharacterServiceImpl implements CharacterService {
 
     @Autowired
     private CharacterUtils characterUtils;
+
+    @Autowired
+    private ExpUtils expUtils;
 
     /**
      * 查询角色列表
@@ -137,7 +145,37 @@ public class CharacterServiceImpl implements CharacterService {
 
 
     @Override
-    public CharacterInfo queryCharacterInfo(String characterName){
-        return characterUtils.queryCharacterInfo(characterName);
+    public CharacterInfo queryCharacterInfo(String characterName) {
+        CharacterInfo characterInfo = characterUtils.queryCharacterInfo(characterName);
+
+        Integer nextStage = expUtils.getNextStage(characterInfo.getLevel());
+        BigDecimal nextStageExp = expUtils.getNextStageExp(nextStage);
+        List<GraphData> graphDataList = characterInfo.getGraphDataList();
+        GraphData lastItem = graphDataList.get(graphDataList.size() - 2);
+        BigDecimal expNeedToNextStage = nextStageExp.subtract(lastItem.getTotalOverallExp());
+
+        characterInfo.setNextStageLevel(nextStage);
+        if (!BigDecimal.ZERO.equals(lastItem.getExpDifference())) {
+            BigDecimal dayToNextStageOne = expNeedToNextStage.divide(lastItem.getExpDifference(), 2,
+                    RoundingMode.HALF_DOWN);
+            if (dayToNextStageOne.compareTo(new BigDecimal(10000)) < 0) {
+                characterInfo.setDayToNextStageFourteen(dayToNextStageOne);
+                characterInfo.setDayToNextStageOne(dayToNextStageOne);
+            }
+        }
+
+
+        BigDecimal expGainPastFourteen = graphDataList.stream().map(GraphData::getExpDifference).reduce(BigDecimal.ZERO,
+                BigDecimal::add);
+        if (!BigDecimal.ZERO.equals(expGainPastFourteen)) {
+            BigDecimal dayToNextStageFourteen =
+                    expNeedToNextStage.divide(expGainPastFourteen.divide(new BigDecimal(14), RoundingMode.HALF_UP),
+                    2, RoundingMode.HALF_UP);
+            if (dayToNextStageFourteen.compareTo(new BigDecimal(10000)) < 0) {
+                characterInfo.setDayToNextStageFourteen(dayToNextStageFourteen);
+            }
+        }
+
+        return characterInfo;
     }
 }
