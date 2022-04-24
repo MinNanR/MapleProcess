@@ -1,21 +1,9 @@
 package site.minnan.mp;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.CharsetUtil;
-import cn.hutool.core.util.NumberUtil;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
 import site.minnan.mp.domain.repository.CharacterRepository;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.List;
 
 @SpringBootTest(classes = MapleProcessApplication.class)
 public class CharacterTest {

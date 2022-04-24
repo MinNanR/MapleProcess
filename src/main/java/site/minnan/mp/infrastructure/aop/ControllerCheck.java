@@ -46,7 +46,7 @@ public class ControllerCheck {
         }
 
         Character character = (Character) session.getAttribute("currentCharacter");
-        if (character == null) {
+        if (character.getId() == null) {
             throw new EntityNotExistException("未指定使用角色");
         } else {
             return proceedingJoinPoint.proceed();

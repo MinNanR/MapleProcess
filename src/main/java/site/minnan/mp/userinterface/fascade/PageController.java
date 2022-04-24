@@ -55,7 +55,8 @@ public class PageController {
             mv.addObject("currentList", currentArcList);
             mv.addObject("allArcaneType", ArcaneType.values());
 
-            List<AttainChartDataVO> chartDataList = arcaneList.stream().map(e -> e.getAttainChartData()).collect(Collectors.toList());
+            List<AttainChartDataVO> chartDataList =
+                    arcaneList.stream().map(e -> e.getAttainChartData()).collect(Collectors.toList());
             mv.addObject("chartDataList", chartDataList);
         } catch (EntityNotExistException e) {
             log.warn("未指定角色");
@@ -67,14 +68,19 @@ public class PageController {
     }
 
     @RequestMapping("/exp")
-    public ModelAndView exp(HttpSession session){
-        Character character = (Character) session.getAttribute("currentCharacter");
-        CharacterInfo characterInfo = characterService.queryCharacterInfo(character.getCharacterName());
-
+    public ModelAndView exp(HttpSession session) {
         ModelAndView mv = new ModelAndView();
-        mv.setViewName("exp");
-        mv.addObject("characterInfo", characterInfo);
-        mv.addObject("graphDataList", characterInfo.getGraphDataList());
+        try {
+            Character character = (Character) session.getAttribute("currentCharacter");
+            CharacterInfo characterInfo = characterService.queryCharacterInfo(character.getCharacterName());
+
+            mv.setViewName("exp");
+            mv.addObject("characterInfo", characterInfo);
+            mv.addObject("graphDataList", characterInfo.getGraphDataList());
+
+        } catch (EntityNotExistException e) {
+            mv.setViewName("character");
+        }
 
         return mv;
     }

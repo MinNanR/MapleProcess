@@ -14,6 +14,7 @@ import site.minnan.mp.domain.aggregate.Character;
 import site.minnan.mp.domain.entity.CharacterInfo;
 import site.minnan.mp.domain.entity.GraphData;
 import site.minnan.mp.domain.repository.CharacterRepository;
+import site.minnan.mp.infrastructure.annotations.CharacterRequired;
 import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 import site.minnan.mp.infrastructure.exception.EntityAlreadyExistException;
 import site.minnan.mp.infrastructure.utils.CharacterUtils;
@@ -145,6 +146,7 @@ public class CharacterServiceImpl implements CharacterService {
 
 
     @Override
+    @CharacterRequired
     public CharacterInfo queryCharacterInfo(String characterName) {
         CharacterInfo characterInfo = characterUtils.queryCharacterInfo(characterName);
 

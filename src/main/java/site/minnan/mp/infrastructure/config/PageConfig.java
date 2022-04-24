@@ -58,7 +58,6 @@ public class PageConfig implements WebMvcConfigurer {
 
     static {
         menuList = ListUtil.toList(
-                Menu.of("/page/index", "主页", "index"),
                 Menu.of("/page/exp", "经验", "exp"),
                 Menu.of("/page/arc", "岛球", "arc")
         );
@@ -67,5 +66,12 @@ public class PageConfig implements WebMvcConfigurer {
 
     public static List<Menu> getMenu() {
         return menuList;
+    }
+
+    @PostConstruct
+    public void openPage() {
+        System.out.println("post construct");
+        String s = RuntimeUtil.execForStr("cmd /c start http://localhost:9000/page/exp");
+        System.out.println(s);
     }
 }
