@@ -1,5 +1,6 @@
 package site.minnan.mp.infrastructure.utils;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.text.csv.CsvData;
 import cn.hutool.core.text.csv.CsvReader;
 import cn.hutool.core.text.csv.CsvRow;
@@ -8,8 +9,9 @@ import cn.hutool.core.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -32,7 +34,9 @@ public class ExpUtils {
         CsvReader reader = CsvUtil.getReader();
         ClassPathResource expResource = new ClassPathResource("exp.csv");
         try {
-            CsvData expData = reader.read(expResource.getFile(), CharsetUtil.CHARSET_UTF_8);
+            InputStream inputStream = expResource.getInputStream();
+            InputStreamReader isr = new InputStreamReader(inputStream);
+            CsvData expData = reader.read(isr);
             for (CsvRow row : expData) {
                 int lv = Integer.parseInt(row.get(0));
                 BigDecimal exp = new BigDecimal(row.get(1));
@@ -40,7 +44,7 @@ public class ExpUtils {
                 stageLevelList.add(lv);
             }
         } catch (IOException e) {
-            log.error("读取经验文件异常");
+            log.error("读取经验文件异常", e);
         }
     }
 

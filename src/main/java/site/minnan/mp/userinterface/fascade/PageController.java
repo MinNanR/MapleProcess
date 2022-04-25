@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 import site.minnan.mp.applicaiton.service.ArcaneService;
 import site.minnan.mp.applicaiton.service.CharacterService;
 import site.minnan.mp.domain.aggregate.Arcane;
@@ -56,14 +57,16 @@ public class PageController {
             mv.addObject("allArcaneType", ArcaneType.values());
 
             List<AttainChartDataVO> chartDataList =
-                    arcaneList.stream().map(e -> e.getAttainChartData()).collect(Collectors.toList());
+                    arcaneList.stream().map(ArcaneListVO::getAttainChartData).collect(Collectors.toList());
             mv.addObject("chartDataList", chartDataList);
+            mv.setViewName("arc");
         } catch (EntityNotExistException e) {
             log.warn("未指定角色");
+            RedirectView redirectView = new RedirectView("character");
+            mv.setView(redirectView);
         }
 
 
-        mv.setViewName("arc");
         return mv;
     }
 
@@ -79,7 +82,8 @@ public class PageController {
             mv.addObject("graphDataList", characterInfo.getGraphDataList());
 
         } catch (EntityNotExistException e) {
-            mv.setViewName("character");
+            RedirectView redirectView = new RedirectView("character");
+            mv.setView(redirectView);
         }
 
         return mv;

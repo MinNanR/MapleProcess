@@ -28,12 +28,5 @@ server:
   port: 9000
 
 logging:
-  level:
-    root: info
-    org.springframework.web: info
-    org.hibernate.SQL: debug
-    org.hibernate.engine.QueryParameters: debug
-    org.hibernate.engine.query.HQLQueryPlan: debug
-    org.hibernate.type.descriptor.sql.BasicBinder: trace
   file:
-    path: ./logs/mp.log
+    path: ./logs

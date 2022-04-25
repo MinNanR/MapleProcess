@@ -78,11 +78,15 @@ public class CharacterServiceImpl implements CharacterService {
      * @param dto
      */
     @Override
+    @CacheEvict(value = "currentCharacter", allEntries = true)
     public void addCharacter(AddCharacterDTO dto) {
+        long characterCount = characterRepository.count();
+
         Character character = new Character();
         character.setCharacterName(dto.getCharacterName());
         character.setLevel(dto.getLevel());
         character.setJob(dto.getJob());
+        character.setCurrent(characterCount == 0L ? 1 : 0);
         characterRepository.save(character);
     }
 
