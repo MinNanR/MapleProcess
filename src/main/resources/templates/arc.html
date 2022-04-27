@@ -80,27 +80,36 @@
                     </thead>
                     <tbody>
                     <tr th:each="arcane, itr : ${arcaneList}">
+
                         <td th:text="${itr.index + 1}"></td>
                         <td th:text="${arcane.arcaneType.label()}"></td>
                         <td th:text="${arcane.currentLevel}"></td>
                         <td th:text="${arcane.currentCount} + '/' + ${arcane.countToNextLevel}"></td>
                         <td th:text="${arcane.totalCount} + '/' + ${arcane.countToMaxLevel}"></td>
 
-                        <td th:if="!${arcane.dove3}"
-                            th:text="${#numbers.formatDecimal(arcane.dayCountToNextLevelThreeDay, 1, 2)}"></td>
-                        <td th:if="${arcane.dove3}">这辈子都没可能升级了</td>
+                        <th:block th:if="${arcane.currentLevel} < 20">
+                            <td th:if="!${arcane.dove3}"
+                                th:text="${#numbers.formatDecimal(arcane.dayCountToNextLevelThreeDay, 1, 2)}"></td>
+                            <td th:if="${arcane.dove3}">这辈子都没可能升级了</td>
 
-                        <td th:if="!${arcane.dove7}"
-                            th:text="${#numbers.formatDecimal(arcane.dayCountToNextLevelSevenDay, 1, 2)}"></td>
-                        <td th:if="${arcane.dove7}">这辈子被子都没可能升级了</td>
+                            <td th:if="!${arcane.dove7}"
+                                th:text="${#numbers.formatDecimal(arcane.dayCountToNextLevelSevenDay, 1, 2)}"></td>
+                            <td th:if="${arcane.dove7}">这辈子被子都没可能升级了</td>
 
-                        <td th:if="!${arcane.dove3}"
-                            th:text="${#numbers.formatDecimal(arcane.dayCountToMaxLevelThreeDay, 1, 2)}"></td>
-                        <td th:if="${arcane.dove3}">这辈子被子都没可能升满了</td>
+                            <td th:if="!${arcane.dove3}"
+                                th:text="${#numbers.formatDecimal(arcane.dayCountToMaxLevelThreeDay, 1, 2)}"></td>
+                            <td th:if="${arcane.dove3}">这辈子被子都没可能升满了</td>
 
-                        <td th:if="!${arcane.dove7}"
-                            th:text="${#numbers.formatDecimal(arcane.dayCountToMaxLevelSevenDay, 1, 2)}"></td>
-                        <td th:if="${arcane.dove7}">这辈子被子都没可能升满了</td>
+                            <td th:if="!${arcane.dove7}"
+                                th:text="${#numbers.formatDecimal(arcane.dayCountToMaxLevelSevenDay, 1, 2)}"></td>
+                            <td th:if="${arcane.dove7}">这辈子被子都没可能升满了</td>
+                        </th:block>
+                        <th:block th:if="${arcane.currentLevel} == 20">
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                        </th:block>
                     </tr>
                     </tbody>
                 </table>

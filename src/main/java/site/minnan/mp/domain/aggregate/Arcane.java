@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -77,17 +79,18 @@ public class Arcane {
     static {
         needMap = new HashMap<>();
         needMap.put(0, 0);
-        for (int i = 1; i <= 20; i++) {
+        for (int i = 1; i < 20; i++) {
             needMap.put(i, i * i + 11);
         }
+        needMap.put(20, 0);
     }
 
     private int calculateStartCurrentCount(int startTotalCount) {
-        level = 1;
-        while (startTotalCount > (needMap.get(level))) {
-            startTotalCount -= needMap.get(level);
+        level = 0;
+        do {
             level++;
-        }
+            startTotalCount -= needMap.get(level);
+        } while (startTotalCount > needMap.get(level));
         return startTotalCount;
     }
 
