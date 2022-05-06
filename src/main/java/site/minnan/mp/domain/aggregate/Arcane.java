@@ -97,12 +97,21 @@ public class Arcane {
     /**
      * 更新当前等级的岛球信息
      */
-    public void updateLevelInfo(Integer startTotalCount, Integer attain) {
-        this.totalCount = startTotalCount + attain;
-        int newCurrentCount = calculateStartCurrentCount(startTotalCount) + attain;
-        int countNeed = needMap.get(level);
-        this.currentCount = newCurrentCount % countNeed;
-        this.level = level + newCurrentCount / countNeed;
+    public void updateLevelInfo(ArcaneAttainRecord record) {
+//        this.totalCount = startTotalCount + attain;
+//        int newCurrentCount = calculateStartCurrentCount(startTotalCount) + attain;
+//        int newCurrentCount = record.getStartTotalCount() + record.getAttainCount();
+//        int countNeed = needMap.get(level);
+//        this.currentCount = newCurrentCount % countNeed;
+//        this.level = level + newCurrentCount / countNeed;
+        Integer startLevel = record.getStartLevel();
+        Integer startCurrentCount = record.getStartCurrentCount();
+        Integer attainCount = record.getAttainCount();
+        Integer needCount = needMap.get(startLevel);
+        int newCurrentCount = startCurrentCount + attainCount;
+        this.level = startLevel + newCurrentCount / needCount;
+        this.currentCount = newCurrentCount % needCount;
+        this.totalCount = record.getStartTotalCount() + attainCount;
     }
 
     public void calculateTotalCount() {

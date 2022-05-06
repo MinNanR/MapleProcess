@@ -90,17 +90,19 @@ public class ArcaneServiceImpl implements ArcaneService {
             if (recordMap.containsKey(type)) {
                 ArcaneAttainRecord record = recordMap.get(type);
                 record.setAttainCount(attainCount);
-                arcane.updateLevelInfo(record.getStartTotalCount(), attainCount);
+                arcane.updateLevelInfo(record);
             } else {
                 ArcaneAttainRecord newRecord = ArcaneAttainRecord.builder()
                         .characterId(characterId)
                         .arcaneType(attainItem.getArcaneType())
                         .attainCount(attainCount)
                         .startTotalCount(arcane.getTotalCount())
+                        .startLevel(arcane.getLevel())
+                        .startCurrentCount(arcane.getCurrentCount())
                         .noteDate(noteDate)
                         .createTime(Timestamp.from(Instant.now()))
                         .build();
-                arcane.updateLevelInfo(arcane.getTotalCount(), attainCount);
+                arcane.updateLevelInfo(newRecord);
                 recordList.add(newRecord);
             }
         }

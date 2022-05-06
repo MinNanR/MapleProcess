@@ -1,5 +1,7 @@
 package site.minnan.mp.infrastructure.utils;
 
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -28,9 +30,18 @@ public class CharacterUtils {
 
         String queryUrl = QUERY_BY_NAME_BASE_URL + characterName;
 
+        log.info("开始查询角色：{}", characterName);
+
+//        HttpRequest request = HttpUtil.createGet(queryUrl);
+//        request.cookie("cf_chl_2=ab7e9f4f7e40552; cf_chl_prog=x13; cf_clearance=GRwjxxh1JvKVj940PoXpjuGRAbfxUNsuDn" +
+//                ".9zy3TT94-1651716370-0-150");
+//        request.header("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) " +
+//                "Chrome/96.0.4664.55 Safari/537.36 Edg/96.0.1054.41");
+//        HttpResponse execute = request.execute();
+//        byte[] responseBytes = execute.bodyBytes();
+
         byte[] responseBytes = HttpUtil.get(queryUrl).getBytes(StandardCharsets.UTF_8);
 
-        log.info("开始查询角色：{}", characterName);
         if (responseBytes.length == 0) {
             log.warn("查询失败，查询角色：{}", characterName);
             throw new EntityNotExistException("角色不存在");

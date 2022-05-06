@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import site.minnan.mp.infrastructure.enumerate.ArcaneType;
 
 import javax.persistence.*;
@@ -61,6 +62,16 @@ public class ArcaneAttainRecord {
      */
     @Column
     private Integer startTotalCount;
+
+    /**
+     * 当日开始数量
+     */
+    private Integer startCurrentCount;
+
+    /**
+     * 当日开始等级
+     */
+    private Integer startLevel;
 
     /**
      * 获取的日期
