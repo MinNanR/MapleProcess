@@ -70,6 +70,6 @@ public class PageConfig implements WebMvcConfigurer {
 
     @PostConstruct
     public void openPage() {
-//        String s = RuntimeUtil.execForStr("cmd /c start http://localhost:9000/page/exp");
+        RuntimeUtil.execForStr("cmd /c start http://localhost:9000/page/exp");
     }
 }
